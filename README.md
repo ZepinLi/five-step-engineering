@@ -1,6 +1,6 @@
 # Five-Step Engineering
 
-An evidence-first Codex skill for improving systems in the right order.
+An evidence-first Agent Skill for Codex, Claude Code, and Cursor.
 
 > **Do not optimize something that has not earned the right to exist.**
 
@@ -45,23 +45,45 @@ decision-focused output for agentic engineering work.
 
 ## Install
 
+Clone once:
+
 ```bash
 git clone https://github.com/ZepinLi/five-step-engineering.git
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)/five-step-engineering/five-step-engineering" \
-  ~/.codex/skills/five-step-engineering
+cd five-step-engineering
 ```
 
-Restart Codex after installation.
+Link the same skill into any client you use:
+
+```bash
+# Codex
+mkdir -p ~/.codex/skills
+ln -s "$PWD/five-step-engineering" ~/.codex/skills/five-step-engineering
+
+# Claude Code
+mkdir -p ~/.claude/skills
+ln -s "$PWD/five-step-engineering" ~/.claude/skills/five-step-engineering
+
+# Cursor
+mkdir -p ~/.cursor/skills
+ln -s "$PWD/five-step-engineering" ~/.cursor/skills/five-step-engineering
+```
+
+Restart the client or open a new agent session if the skill is not discovered
+immediately. Cursor users can alternatively
+[import the GitHub repository](https://cursor.com/docs/skills.md#installing-skills-from-github)
+from **Customize → Rules → Add Rule → Remote Rule (GitHub)**.
 
 ## Use
 
-```text
-Use $five-step-engineering to evaluate whether we should add a cache to this service.
-```
+| Client | Direct invocation |
+| --- | --- |
+| Codex | `$five-step-engineering evaluate whether we should add a cache.` |
+| Claude Code | `/five-step-engineering evaluate whether we should add a cache.` |
+| Cursor | `/five-step-engineering evaluate whether we should add a cache.` |
 
-The skill uses explicit invocation and returns only the target, evidence,
-decision, and smallest useful next step.
+Codex uses explicit invocation. Claude Code and Cursor may also discover the
+skill automatically from its description. The skill returns only the target,
+evidence, decision, and smallest useful next step.
 
 ## Structure
 

@@ -1,6 +1,6 @@
 ---
 name: five-step-engineering
-description: Apply the ordered Five-Step Engineering Process to redesign or optimize a system, codebase, pipeline, product, or workflow. Use when Codex should question requirements, remove unnecessary parts or processes before optimizing, simplify what remains, shorten feedback cycles, and automate only proven work.
+description: Apply the ordered Five-Step Engineering Process to redesign or optimize a system, codebase, pipeline, product, or workflow. Use when an agent should question requirements, remove unnecessary parts or processes before optimizing, simplify what remains, shorten feedback cycles, and automate only proven work.
 ---
 
 # Five-Step Engineering
