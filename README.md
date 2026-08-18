@@ -1,6 +1,9 @@
 # Five-Step Engineering
 
-An evidence-first Agent Skill for Codex, Claude Code, and Cursor.
+An evidence-first Agent Skill for Codex, Claude Code, and Cursor. It now applies
+the same first-principles discipline to data models, design patterns, and
+software architecture: model valid state first, hide volatile decisions, and
+make every abstraction earn its concepts.
 
 > **Do not optimize something that has not earned the right to exist.**
 
@@ -12,7 +15,7 @@ flowchart TB
     subgraph P["Ordered evidence gates"]
         direction LR
         Q["1 · Question<br/>requirements"] -->|"pass"| D["2 · Delete"]
-        D -->|"pass"| S["3 · Simplify<br/>and optimize"]
+        D -->|"pass"| S["3 · Simplify<br/>data · boundaries · patterns"]
         S -->|"pass"| C["4 · Accelerate<br/>feedback"]
         C -->|"pass"| A["5 · Automate"]
     end
@@ -42,6 +45,9 @@ later popularized as
 in Walter Isaacson's *Elon Musk*.
 This skill adds explicit evidence gates, reversibility safeguards, and a
 decision-focused output for agentic engineering work.
+Its [structural-design reference](five-step-engineering/references/structural-design.md)
+distills primary work on data invariants, information hiding, quality scenarios,
+and problem-first use of patterns.
 
 ## Install
 
@@ -93,6 +99,8 @@ five-step-engineering/
 ├── LICENSE
 └── five-step-engineering/
     ├── SKILL.md
+    ├── references/
+    │   └── structural-design.md
     └── agents/
         └── openai.yaml
 ```
