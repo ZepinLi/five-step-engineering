@@ -22,19 +22,34 @@ flowchart TB
     I --> Q
     A --> O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    U["Unknown or invalid<br/>assumption"] -. "investigate or restart" .-> Q
+    Q -. "not resolved · hold" .-> H
+    D -. "not resolved · hold" .-> H
+    S -. "not resolved · hold" .-> H
+    C -. "not resolved · hold" .-> H
+    A -. "not resolved · hold" .-> H
+    subgraph L["Recursive gate recovery"]
+        direction LR
+        H["Name discrepancy"] --> B["Shrink to one blocker"]
+        B --> F["Run five steps"]
+        F --> E["Act · observe · update"]
+        E --> G["Re-evaluate owning gate"]
+        G -->|"still open · new evidence"| H
+    end
+    G -->|"resolved"| V["Resume parent sequence"]
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
     classDef gate fill:#0d1117,stroke:#58a6ff,color:#f0f6fc;
     classDef result fill:#dafbe1,stroke:#1a7f37,color:#116329;
-    class I,U input;
+    class I,H,B,F,E,G,V input;
     class Q,D,S,C,A gate;
     class O,R result;
     style P fill:#ffffff,stroke:#d0d7de,color:#24292f;
+    style L fill:#f6f8fa,stroke:#afb8c1,color:#24292f;
 ```
 
-Advance only when the current evidence gate passes. Stop at the first
-consequential unknown; if an assumption breaks, restart at step 1.
+Advance only when the current evidence gate is resolved. A failed gate holds
+stage progression—not problem solving—while the smallest blocker is resolved
+recursively and returned to its parent gate.
 
 ## Origins
 
@@ -44,7 +59,9 @@ later popularized as
 [“The Algorithm”](https://www.inc.com/jeff-haden/elon-musks-algorithm-a-5-step-process-to-dramatically-improve-nearly-everything-is-both-simple-brilliant.html)
 in Walter Isaacson's *Elon Musk*.
 This skill adds explicit evidence gates, reversibility safeguards, and a
-decision-focused output for agentic engineering work.
+[closed-loop recovery protocol](five-step-engineering/references/closed-loop-engineering.md)
+informed by risk-driven iteration, feedback control, recursive problem solving,
+and evidence on agent self-correction.
 Its [structural-design reference](five-step-engineering/references/structural-design.md)
 distills primary work on data invariants, information hiding, quality scenarios,
 and problem-first use of patterns.
@@ -88,8 +105,9 @@ from **Customize → Rules → Add Rule → Remote Rule (GitHub)**.
 | Cursor | `/five-step-engineering evaluate whether we should add a cache.` |
 
 Codex uses explicit invocation. Claude Code and Cursor may also discover the
-skill automatically from its description. The skill returns only the target,
-evidence, decision, and smallest useful next step.
+skill automatically from its description. It reports target, evidence,
+decision, and next action; for action requests it keeps resolving safe,
+in-scope blockers instead of stopping at the first failed gate.
 
 ## Structure
 
@@ -100,6 +118,7 @@ five-step-engineering/
 └── five-step-engineering/
     ├── SKILL.md
     ├── references/
+    │   ├── closed-loop-engineering.md
     │   └── structural-design.md
     └── agents/
         └── openai.yaml

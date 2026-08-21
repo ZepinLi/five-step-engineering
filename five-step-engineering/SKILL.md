@@ -1,6 +1,6 @@
 ---
 name: five-step-engineering
-description: Apply the ordered Five-Step Engineering Process to design, build, redesign, or optimize a system, codebase, data model, architecture, pipeline, product, or workflow. Use when an agent should question requirements, remove unnecessary parts before optimizing, keep data and dependencies clear, justify patterns and abstractions with evidence, shorten feedback cycles, and automate only proven work.
+description: Apply the ordered Five-Step Engineering Process to design, build, redesign, or optimize a system, codebase, data model, architecture, pipeline, product, or workflow. Use when an agent should question requirements, remove unnecessary parts before optimizing, keep data and dependencies clear, justify patterns and abstractions with evidence, resolve failed gates through bounded evidence-producing recursion, shorten feedback cycles, and automate only proven work.
 ---
 
 # Five-Step Engineering
@@ -21,7 +21,8 @@ Use this ordered decision protocol, scaled to the decision at hand:
 - Treat unknown mechanisms as investigation candidates, not deletion candidates.
 - Do not count moving complexity, risk, or manual work to users, downstream systems, or operations as deletion.
 - Seek the minimum sufficient system, not maximum deletion.
-- Keep the order mandatory. If a later step invalidates an assumption, restart at step 1.
+- Keep the order mandatory. A failed gate blocks promotion, not problem solving.
+- If a later step invalidates an assumption, open a nested five-step loop around that assumption, resolve it, then return to the gate that owns it.
 
 ## Scope and safeguards
 
@@ -103,14 +104,24 @@ Before starting:
 - **Change locality:** Exercise one likely change or failure and inspect which modules, interfaces, data, and operations it crosses; use dependency and co-change history as clues, not universal scores.
 - **Compatibility:** For public or persisted contracts, test relevant old/new producer-consumer combinations and distinguish source, wire, and semantic compatibility.
 - Do not equate "not observed" with "cannot occur." State sampling limits.
-- If evidence is unavailable, mark the conclusion unverified and state which decision that blocks.
+- If evidence is unavailable, mark the conclusion unverified and make the missing evidence the next child problem. It blocks stage promotion, not the task.
 
-## Maintain decision discipline
+## Resolve failed gates recursively
 
-- Stop at the first gate that does not pass; do not recommend later-stage work yet.
-- Treat ending at step 2 or 3 as a valid success.
-- Prefer a cheap experiment over an argument.
-- If complexity or exception count grows again, return to step 1 instead of adding another mechanism.
+When a gate does not resolve on the first pass, read [references/closed-loop-engineering.md](references/closed-loop-engineering.md). Hold later stages and keep working on the current gate:
+
+1. Name the discrepancy: the gate criterion, observed evidence, remaining uncertainty, and consequence of being wrong.
+2. Check the evaluator before changing the product. Locate the failure in the requirement, assumption, evidence, test or environment, or implementation.
+3. Make the highest-value unresolved discrepancy a strictly narrower child problem. Apply all five steps to it from step 1.
+4. State a prediction and take the smallest safe, reversible action that can distinguish alternatives. Observe the result and update the evidence.
+5. Return only the new evidence, decision, or necessary artifact to the parent. Re-evaluate the same parent gate and resume from it when resolved.
+6. If it remains unresolved, choose a different evidence-producing action, shrink the problem again, or question the governing requirement, measure, test oracle, or boundary. Never repeat an unchanged attempt without new evidence.
+
+Each cycle must preserve hard constraints and produce semantic progress: reduce a relevant uncertainty, eliminate an alternative, satisfy a missing condition, simplify the mechanism, or revise a falsified assumption. Wait for an action's result before correcting again; avoid concurrent loops that change the same state.
+
+Continue autonomously while a safe, in-scope, authorized action can change the decision state. Escalate only when progress depends on unavailable external state, authority, an irreversible trade-off, or a hard safety or resource boundary. Return a resumable record of the evidence, attempts, exact missing condition, and smallest unblocking request.
+
+A gate is resolved when it passes; its criterion is revised or deleted with evidence; the candidate path is shown infeasible and abandoned; or an authorized external decision closes it. Ending at step 2 or 3 is success only when the requested outcome is met and later steps are unnecessary—not when a resolvable gate was left open.
 
 ## Example
 
@@ -125,7 +136,7 @@ Return only what helps the decision:
 
 1. **Target:** State the outcome, boundary, success measure, and hard constraints.
 2. **Evidence:** State what is known, tested, and still unknown.
-3. **Decision:** State what to delete, keep, or investigate; name the first unresolved gate. For structural work, include the data invariants, boundaries and dependencies, failure behavior, and simplest rejected alternative needed to justify the design.
-4. **Next:** Give the smallest action that resolves the highest-value uncertainty.
+3. **Decision:** State what was deleted, kept, revised, or abandoned and how each reached gate was resolved. For structural work, include the data invariants, boundaries and dependencies, failure behavior, and simplest rejected alternative needed to justify the design.
+4. **Next:** For an action request, perform the next safe in-scope action and keep re-evaluating; do not hand resolvable work back to the user. If genuinely blocked, give the exact external condition, evidence and attempts so far, and smallest unblocking request.
 
 Omit empty sections. Mention deferred optimization or automation only when doing so prevents wasted work now.

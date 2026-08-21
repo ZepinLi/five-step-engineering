@@ -1,7 +1,7 @@
 interface:
   display_name: "Five-Step Engineering"
-  short_description: "Question, delete, simplify, accelerate, then automate"
-  default_prompt: "Use $five-step-engineering to evaluate this proposed change in the correct engineering order."
+  short_description: "Close engineering loops through five evidence gates"
+  default_prompt: "Use $five-step-engineering to carry this change through the ordered gates, resolving blockers recursively until the outcome is verified."
 
 policy:
   allow_implicit_invocation: false
