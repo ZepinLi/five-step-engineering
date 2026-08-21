@@ -19,32 +19,19 @@ flowchart TB
         S -->|"pass"| C["4 · Accelerate<br/>feedback"]
         C -->|"pass"| A["5 · Automate"]
     end
-    I --> Q
-    A --> O["Minimum sufficient system"]
+    I --> P
+    P -->|"resolved"| O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    Q -. "not resolved · hold" .-> H
-    D -. "not resolved · hold" .-> H
-    S -. "not resolved · hold" .-> H
-    C -. "not resolved · hold" .-> H
-    A -. "not resolved · hold" .-> H
-    subgraph L["Recursive gate recovery"]
-        direction LR
-        H["Name discrepancy"] --> B["Shrink to one blocker"]
-        B --> F["Run five steps"]
-        F --> E["Act · observe · update"]
-        E --> G["Re-evaluate owning gate"]
-        G -->|"still open · new evidence"| H
-    end
-    G -->|"resolved"| V["Resume parent sequence"]
+    P -. "not resolved" .-> L["Hold · resolve smallest blocker<br/>nested five-step loop"]
+    L -. "new evidence" .-> P
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
     classDef gate fill:#0d1117,stroke:#58a6ff,color:#f0f6fc;
     classDef result fill:#dafbe1,stroke:#1a7f37,color:#116329;
-    class I,H,B,F,E,G,V input;
+    class I,L input;
     class Q,D,S,C,A gate;
     class O,R result;
-    style P fill:#ffffff,stroke:#d0d7de,color:#24292f;
-    style L fill:#f6f8fa,stroke:#afb8c1,color:#24292f;
+    style P fill:transparent,stroke:#8c959f,color:#8c959f;
 ```
 
 Advance only when the current evidence gate is resolved. A failed gate holds
