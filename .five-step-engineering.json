@@ -3,7 +3,7 @@
   "last_decision": {
     "base_commit": "dcf330a9813a1ecccaebfe2991fb78b902fc2f42",
     "evidence": [
-      "Seventeen standard-library tests exercise valid, invalid, bypass, expiry, and recovery transitions",
+      "Twenty standard-library tests exercise valid, invalid, bypass, expiry, and recovery transitions",
       "The skill validator accepts the revised skill and actionlint accepts the repository workflow",
       "The guard reports this repository transition with exact deltas and a stable failure fingerprint"
     ],
