@@ -20,16 +20,17 @@ flowchart TB
         C -->|"pass"| A["5 · Automate"]
     end
     I --> P
-    P -->|"resolved"| O["Minimum sufficient system"]
+    P --> G{"Evidence +<br/>complexity invariant"}
+    G -->|"pass"| O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    P -. "not resolved" .-> L["Hold · resolve smallest blocker<br/>nested five-step loop"]
+    G -. "not resolved" .-> L["Resolve smallest discrepancy<br/>nested five-step loop"]
     L -. "new evidence" .-> P
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
     classDef gate fill:#0d1117,stroke:#58a6ff,color:#f0f6fc;
     classDef result fill:#dafbe1,stroke:#1a7f37,color:#116329;
     class I,L input;
-    class Q,D,S,C,A gate;
+    class Q,D,S,C,A,G gate;
     class O,R result;
     style P fill:transparent,stroke:#8c959f,color:#8c959f;
 ```
@@ -52,6 +53,10 @@ and evidence on agent self-correction.
 Its [structural-design reference](five-step-engineering/references/structural-design.md)
 distills primary work on data invariants, information hiding, quality scenarios,
 and problem-first use of patterns.
+For repositories that opt in, its
+[complexity guard](five-step-engineering/references/complexity-control.md)
+turns observable structural growth into an explicit, CI-enforced decision while
+keeping failed checks inside the recursive engineering loop.
 
 ## Install
 
@@ -96,16 +101,46 @@ skill automatically from its description. It reports target, evidence,
 decision, and next action; for action requests it keeps resolving safe,
 in-scope blockers instead of stopping at the first failed gate.
 
+## Complexity guard (opt-in)
+
+The skill also ships a language-independent, standard-library Python guard for
+Git repositories. Preview the files it would add to a target project:
+
+```bash
+python3 five-step-engineering/scripts/complexity_guard.py init --repo .
+```
+
+Add `--write` only after reviewing the generated policy, pull-request checklist,
+and workflow. The workflow consumes the centrally maintained
+`ZepinLi/five-step-engineering@v1.0.0` GitHub Action. It blocks unexplained
+structural transitions from merging, emits a machine-readable report, and sends
+the agent back through the smallest relevant five-step loop.
+
+See the [complexity-control reference](five-step-engineering/references/complexity-control.md)
+for the invariant, configuration, external-check interface, and branch
+protection requirements.
+
 ## Structure
 
 ```text
 five-step-engineering/
+├── action.yml
+├── .five-step-engineering.json
+├── .github/
+│   ├── pull_request_template.md
+│   └── workflows/
+│       └── complexity-guard.yml
 ├── README.md
 ├── LICENSE
+├── tests/
+│   └── test_complexity_guard.py
 └── five-step-engineering/
     ├── SKILL.md
+    ├── scripts/
+    │   └── complexity_guard.py
     ├── references/
     │   ├── closed-loop-engineering.md
+    │   ├── complexity-control.md
     │   └── structural-design.md
     └── agents/
         └── openai.yaml

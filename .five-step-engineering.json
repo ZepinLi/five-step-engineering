@@ -1,0 +1,33 @@
+{
+  "external_hard_checks": [],
+  "last_decision": null,
+  "schema_version": 1,
+  "scope": {
+    "exclude": [
+      ".git/**",
+      "**/.git/**",
+      "node_modules/**",
+      "**/node_modules/**",
+      "vendor/**",
+      "**/vendor/**",
+      "dist/**",
+      "**/dist/**",
+      "build/**",
+      "**/build/**",
+      "coverage/**",
+      "**/coverage/**",
+      ".five-step-engineering-report.json"
+    ],
+    "include": [
+      "**"
+    ],
+    "sensitive": [
+      "action.yml",
+      ".github/workflows/**",
+      "five-step-engineering/SKILL.md",
+      "five-step-engineering/scripts/**",
+      "five-step-engineering/references/complexity-control.md"
+    ]
+  },
+  "temporary_items": []
+}

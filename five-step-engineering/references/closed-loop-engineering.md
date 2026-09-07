@@ -9,10 +9,11 @@ repeating blind attempts, or growing a permanent orchestration system.
 1. [The control criterion](#the-control-criterion)
 2. [Minimal loop state](#minimal-loop-state)
 3. [Recursive recovery](#recursive-recovery)
-4. [Progress and stability](#progress-and-stability)
-5. [Reframing and learning](#reframing-and-learning)
-6. [Resolution and escalation](#resolution-and-escalation)
-7. [Evidence base](#evidence-base)
+4. [Executable gate failures](#executable-gate-failures)
+5. [Progress and stability](#progress-and-stability)
+6. [Reframing and learning](#reframing-and-learning)
+7. [Resolution and escalation](#resolution-and-escalation)
+8. [Evidence base](#evidence-base)
 
 ## The control criterion
 
@@ -79,6 +80,34 @@ assumption changes.
 Prefer one active child that changes the parent decision over a tree of
 interesting investigations. Keep an alternative available for consequential
 choices; the locally closest action may have worse total cost or risk.
+
+## Executable gate failures
+
+A failed test or CI check is a discrepancy report, not an instruction to end
+the task. When the repository uses the executable complexity guard, read its
+JSON rather than inferring from the exit code alone:
+
+1. **Validate the evaluator.** Exit `3` means the baseline, Git history,
+   configuration, external report, or checker is incomplete. Repair the
+   observation channel before changing product behavior.
+2. **Own one discrepancy.** Exit `2` means promotion is unresolved. Select the
+   smallest unearned delta, expired temporary item, or hard-check failure that
+   can change the verdict.
+3. **Reduce before justifying.** Delete the path, merge duplicate state, narrow
+   the interface, or use the direct baseline if it satisfies the real force.
+4. **Record only necessary structure.** When reduction cannot meet a verified
+   constraint, match the observed delta exactly and attach evidence, ownership,
+   and a permanent or bounded temporary lifecycle.
+5. **Recompose and rerun.** Remove obsolete implementations, diagnostic
+   scaffolding, and expired compatibility paths, then execute the report's
+   `rerun_command` against the same parent transition.
+
+The `failure_fingerprint` identifies an unchanged violation state. Never retry
+that state without changing code, evidence, observation, or the governing
+frame. Do not make progress by disabling the workflow, hiding owned code in an
+exclusion, weakening a required external check, or replacing evidence with a
+checkbox. A protected check blocks merging an unresolved state while leaving
+local experiments and evidence-producing commits free to continue.
 
 ## Progress and stability
 

@@ -1,0 +1,90 @@
+name: Five-Step Engineering Complexity Guard
+description: Block observable structural growth that lacks an earned-complexity decision.
+
+inputs:
+  base-ref:
+    description: Base commit or ref for the transition.
+    required: true
+  head-ref:
+    description: Candidate commit or ref for the transition.
+    required: true
+  config-path:
+    description: Repository-relative policy path.
+    required: false
+    default: .five-step-engineering.json
+  external-report:
+    description: Optional JSON report produced by repository-native checks.
+    required: false
+    default: ""
+  report-path:
+    description: Path for the stable JSON result.
+    required: false
+    default: .five-step-engineering-report.json
+
+outputs:
+  status:
+    description: pass, unresolved, or evaluator_error.
+    value: ${{ steps.guard.outputs.status }}
+  failure-fingerprint:
+    description: Stable fingerprint for the unresolved condition.
+    value: ${{ steps.guard.outputs.failure_fingerprint }}
+  report-path:
+    description: Path to the JSON report.
+    value: ${{ inputs.report-path }}
+
+runs:
+  using: composite
+  steps:
+    - id: guard
+      name: Evaluate earned-complexity invariant
+      shell: bash
+      env:
+        FSE_BASE_REF: ${{ inputs.base-ref }}
+        FSE_HEAD_REF: ${{ inputs.head-ref }}
+        FSE_CONFIG_PATH: ${{ inputs.config-path }}
+        FSE_EXTERNAL_REPORT: ${{ inputs.external-report }}
+        FSE_REPORT_PATH: ${{ inputs.report-path }}
+      run: |
+        set +e
+        args=(
+          check
+          --repo "$GITHUB_WORKSPACE"
+          --base "$FSE_BASE_REF"
+          --head "$FSE_HEAD_REF"
+          --config "$FSE_CONFIG_PATH"
+          --report "$FSE_REPORT_PATH"
+          --summary "$GITHUB_STEP_SUMMARY"
+        )
+        if [[ -n "$FSE_EXTERNAL_REPORT" ]]; then
+          args+=(--external-report "$FSE_EXTERNAL_REPORT")
+        fi
+        python3 "$GITHUB_ACTION_PATH/five-step-engineering/scripts/complexity_guard.py" "${args[@]}"
+        guard_exit=$?
+        python3 - "$FSE_REPORT_PATH" "$GITHUB_OUTPUT" "$guard_exit" <<'PY'
+        import json
+        from pathlib import Path
+        import sys
+
+        report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+        with Path(sys.argv[2]).open("a", encoding="utf-8") as output:
+            output.write(f"status={report['status']}\n")
+            output.write(f"failure_fingerprint={report['failure_fingerprint']}\n")
+            output.write(f"exit_code={sys.argv[3]}\n")
+        PY
+        exit 0
+
+    - name: Upload complexity report
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: five-step-engineering-${{ github.run_id }}-${{ github.job }}
+        path: ${{ inputs.report-path }}
+        if-no-files-found: warn
+        include-hidden-files: true
+
+    - name: Enforce complexity gate
+      if: always()
+      shell: bash
+      env:
+        FSE_EXIT_CODE: ${{ steps.guard.outputs.exit_code }}
+      run: exit "${FSE_EXIT_CODE:-3}"

@@ -8,13 +8,14 @@ do not turn it into a pattern-first design phase.
 
 1. [Minimum-sufficient design](#minimum-sufficient-design)
 2. [Earned complexity](#earned-complexity)
-3. [Quality scenarios](#quality-scenarios)
-4. [Data and state](#data-and-state)
-5. [Boundaries and dependencies](#boundaries-and-dependencies)
-6. [Robustness and compatibility](#robustness-and-compatibility)
-7. [Architecture evidence](#architecture-evidence)
-8. [Compact design record](#compact-design-record)
-9. [Evidence base](#evidence-base)
+3. [Complexity as controlled information](#complexity-as-controlled-information)
+4. [Quality scenarios](#quality-scenarios)
+5. [Data and state](#data-and-state)
+6. [Boundaries and dependencies](#boundaries-and-dependencies)
+7. [Robustness and compatibility](#robustness-and-compatibility)
+8. [Architecture evidence](#architecture-evidence)
+9. [Compact design record](#compact-design-record)
+10. [Evidence base](#evidence-base)
 
 ## Minimum-sufficient design
 
@@ -117,6 +118,61 @@ Within its model, the I-confluence result makes the coordination test precise:
 coordinate when independently valid operations could combine to violate a
 named invariant, not merely because distribution feels risky
 ([Bailis et al.](https://doi.org/10.14778/2735508.2735509)).
+
+## Complexity as controlled information
+
+Treat structural disorder as unexplained degrees of freedom, not as a physical
+substance. Thermodynamic entropy supplies a useful warning that unattended
+systems tend to lose order, but it does not prove that a repository must grow.
+Shannon entropy measures uncertainty in a distribution; for code, it can show
+how widely a change is dispersed without saying whether the change is good.
+Minimum description length suggests counting both a mechanism and the
+exceptions or data needed to make it fit, but the shortest source text is not
+necessarily the clearest or safest design
+([Rissanen](https://doi.org/10.1016/0005-1098(78)90005-5)).
+
+Use this structural vector instead of one weighted score:
+
+- independently meaningful concepts and responsibilities;
+- legal states, transitions, and authoritative sources of truth;
+- dependency edges, cycles, and likely change propagation;
+- public contracts, configuration dimensions, and compatibility variants;
+- exceptional or duplicated paths;
+- runtime coordination, failure modes, and operational surfaces; and
+- temporary investigative, migration, and rollout structure.
+
+A positive delta is earned only when it names a present force, shows why the
+simple baseline fails, supplies relevant evidence, has one lifecycle owner,
+and states when it is removed or reviewed. Before closing the parent change,
+recompose it: delete superseded implementations, collapse parallel truths,
+remove probes and scaffolding, and bound any compatibility path that must
+remain. Required complexity may grow; unowned or unexplained complexity may
+not.
+
+No computable metric can establish unrestricted semantic minimality. Rice's
+theorem rules out deciding every non-trivial semantic program property in
+general ([Rice](https://doi.org/10.2307/1990888)). Proposed complexity measures
+also encode different assumptions: Weyuker's evaluation shows why no common
+measure satisfies every desirable property
+([Weyuker](https://doi.org/10.1109/32.6178)), while property-based measurement
+requires theoretical justification beyond correlation
+([Briand, Morasca, and Basili](https://doi.org/10.1109/32.481535)). Therefore:
+
+- never make LOC, token entropy, cyclomatic complexity, coupling, or churn a
+  universal beauty threshold;
+- use a signal to locate a concrete design question, then inspect the named
+  invariant, boundary, or change scenario;
+- let a project-specific hard check enforce only what it can observe reliably;
+  and
+- require an explicit decision for positive structural transitions rather than
+  claiming the checker understands semantic necessity.
+
+Long-lived systems often require deliberate work to preserve or reduce their
+complexity as they evolve
+([Lehman and Ramil](https://doi.org/10.1016/S0020-0190(03)00382-X)), but studies
+and measures differ across systems. For repositories that opt into executable
+transition checks, read
+[complexity-control.md](complexity-control.md).
 
 ## Quality scenarios
 

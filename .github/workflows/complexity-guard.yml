@@ -1,0 +1,25 @@
+name: complexity-guard
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  complexity-guard:
+    name: complexity-guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Test complexity guard
+        run: python3 -W error::ResourceWarning -m unittest discover -s tests -v
+
+      - name: Enforce earned-complexity invariant
+        uses: ./
+        with:
+          base-ref: ${{ github.event.pull_request.base.sha }}
+          head-ref: ${{ github.event.pull_request.head.sha }}

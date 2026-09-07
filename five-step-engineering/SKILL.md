@@ -21,6 +21,8 @@ Use this ordered decision protocol, scaled to the decision at hand:
 - Treat unknown mechanisms as investigation candidates, not deletion candidates.
 - Do not count moving complexity, risk, or manual work to users, downstream systems, or operations as deletion.
 - Seek the minimum sufficient system, not maximum deletion.
+- Preserve the earned-complexity invariant: every positive structural delta
+  must trace to a real force, evidence, clear ownership, and a lifecycle.
 - Keep the order mandatory. A failed gate blocks promotion, not problem solving.
 - If a later step invalidates an assumption, open a nested five-step loop around that assumption, resolve it, then return to the gate that owns it.
 
@@ -31,6 +33,11 @@ Before starting:
 1. Define the outcome, measurable success, and decision boundary.
 2. Separate hard constraints from the proposed solution; name unacceptable failures.
 3. Scale evidence and reversibility to blast radius, irreversibility, and uncertainty.
+
+If the repository contains `.five-step-engineering.json`, read
+[references/complexity-control.md](references/complexity-control.md) and inspect
+the current transition before designing more structure. Do not install or
+weaken repository governance without authorization and an earned decision.
 
 - Stay within the requested scope. For a narrow change, note broader deletion opportunities without turning them into an unsolicited redesign.
 - During an incident, restore service first; analyze the design afterward.
@@ -54,6 +61,9 @@ Before starting:
 ### 2. Delete the part or process
 
 - Prefer removing a whole component, abstraction, step, handoff, state, flag, or config over improving it.
+- Reconcile the change before promotion: remove superseded paths, duplicate
+  sources of truth, expired compatibility layers, and temporary investigative
+  structure that no longer changes the decision.
 - Delete speculative layers, wrappers, patterns, services, and extension points; first check whether the language, platform, or existing component already provides the capability.
 - Ask: "If this did not exist, what concrete failure would occur?" Answer with a check, not intuition.
 - Count net system cost. Treat a deletion that exports work or failure modes elsewhere as a possible regression.
@@ -103,8 +113,34 @@ Before starting:
 - **Structural integrity:** Test invalid construction, legal and illegal state transitions, boundary values, aliasing, error paths, and serialization round trips where relevant.
 - **Change locality:** Exercise one likely change or failure and inspect which modules, interfaces, data, and operations it crosses; use dependency and co-change history as clues, not universal scores.
 - **Compatibility:** For public or persisted contracts, test relevant old/new producer-consumer combinations and distinguish source, wire, and semantic compatibility.
+- **Complexity transition:** When the repository opts into the executable
+  guard, run it against the intended base and candidate commits. Treat line
+  count and change entropy as diagnostic signals, not verdicts.
 - Do not equate "not observed" with "cannot occur." State sampling limits.
 - If evidence is unavailable, mark the conclusion unverified and make the missing evidence the next child problem. It blocks stage promotion, not the task.
+
+## Preserve the complexity invariant
+
+For code changes, reason about concepts, legal states and truth sources,
+dependencies and cycles, interfaces and configuration, exceptional paths,
+runtime and failure surfaces, and temporary structure. Do not collapse this
+vector into a universal score.
+
+When `.five-step-engineering.json` exists:
+
+1. Run `scripts/complexity_guard.py inspect` before accepting structural growth.
+2. Prefer deletion or the simplest direct baseline. If positive structure is
+   necessary, record the exact observed delta, force, rejected baseline,
+   evidence, owner, lifecycle, and removal or review condition.
+3. Run `check` before promoting the change. Exit `2` opens a nested five-step
+   loop around the smallest unresolved delta; exit `3` opens one around the
+   evaluator. Neither ends the development task.
+4. Re-run the same command after changing code, evidence, observation, or
+   policy. Never repeat an unchanged failure or manufacture passage by
+   disabling checks, widening exclusions, or entering placeholder evidence.
+
+The guard enforces only observable structure. Semantic necessity still
+requires engineering judgment and review.
 
 ## Resolve failed gates recursively
 
@@ -138,5 +174,8 @@ Return only what helps the decision:
 2. **Evidence:** State what is known, tested, and still unknown.
 3. **Decision:** State what was deleted, kept, revised, or abandoned and how each reached gate was resolved. For structural work, include the data invariants, boundaries and dependencies, failure behavior, and simplest rejected alternative needed to justify the design.
 4. **Next:** For an action request, perform the next safe in-scope action and keep re-evaluating; do not hand resolvable work back to the user. If genuinely blocked, give the exact external condition, evidence and attempts so far, and smallest unblocking request.
+
+For an opted-in repository, also report `Complexity delta: none | earned items`
+and `Superseded or temporary structure: none | bounded exception`.
 
 Omit empty sections. Mention deferred optimization or automation only when doing so prevents wasted work now.
