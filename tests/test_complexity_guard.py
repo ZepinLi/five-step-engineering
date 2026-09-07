@@ -106,6 +106,18 @@ class ComplexityGuardTests(unittest.TestCase):
         self.assertEqual(report["status"], "pass")
         self.assertLess(report["observations"]["delta"]["tracked_files"], 0)
 
+    def test_rename_is_observed_without_becoming_growth(self) -> None:
+        self.repo.config()
+        self.repo.write("src/old_name.py", "value = 1\n")
+        base = self.repo.commit("initial")
+        self.repo.git("mv", "src/old_name.py", "src/new_name.py")
+        head = self.repo.commit("rename module")
+
+        report = self.report(base, head)
+
+        self.assertEqual(report["status"], "pass")
+        self.assertEqual(report["observations"]["changed_files"]["renamed"], 1)
+
     def test_unearned_file_growth_is_unresolved(self) -> None:
         self.repo.config()
         base = self.repo.commit("initial")
@@ -348,6 +360,16 @@ class ComplexityGuardTests(unittest.TestCase):
 
         with self.assertRaises(guard.GuardError):
             guard._init(self.repo.root, True, "v1.0.0")
+
+    def test_init_writes_a_pinned_workflow_and_checklist(self) -> None:
+        code = guard._init(self.repo.root, True, "v1.0.0")
+
+        self.assertEqual(code, 0)
+        workflow = (self.repo.root / ".github/workflows/five-step-engineering.yml").read_text()
+        checklist = (self.repo.root / ".github/pull_request_template.md").read_text()
+        self.assertIn("ZepinLi/five-step-engineering@v1.0.0", workflow)
+        self.assertIn("actions/checkout@11d5960a", workflow)
+        self.assertIn("Positive structural deltas", checklist)
 
 
 if __name__ == "__main__":
