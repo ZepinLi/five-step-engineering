@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
 import copy
 import importlib.util
 import io
 import json
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,8 +31,7 @@ class GitRepo:
             ["git", *args],
             cwd=self.root,
             text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=True,
         )
         return result.stdout.strip()

@@ -16,12 +16,12 @@ import fnmatch
 import hashlib
 import json
 import math
-import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
-from typing import Any, Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
+from pathlib import Path
+from typing import Any
 
 
 SCHEMA_VERSION = 1
@@ -79,8 +79,7 @@ def _run_git(repo: Path, args: Sequence[str], *, check: bool = True) -> bytes:
         result = subprocess.run(
             ["git", *args],
             cwd=repo,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=False,
         )
     except OSError as exc:
@@ -113,8 +112,7 @@ def _config_at(repo: Path, ref: str, path: str) -> dict[str, Any] | None:
     result = subprocess.run(
         ["git", "show", f"{ref}:{path}"],
         cwd=repo,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     if result.returncode:
