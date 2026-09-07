@@ -513,6 +513,10 @@ def _external_checks(
             return [], [f"external checks[{index}] is invalid"]
         if check.get("status") not in {"pass", "fail"}:
             return [], [f"external check {check['id']} has an invalid status"]
+        try:
+            _meaningful(check.get("evidence"), f"external check {check['id']}.evidence")
+        except GuardError as exc:
+            return [], [str(exc)]
         by_id[check["id"]] = check
     missing = sorted(required - set(by_id))
     errors = [f"required external checks are missing: {missing}"] if missing else []

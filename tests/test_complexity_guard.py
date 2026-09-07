@@ -249,6 +249,28 @@ class ComplexityGuardTests(unittest.TestCase):
 
         self.assertEqual(report["status"], "evaluator_error")
 
+    def test_placeholder_external_evidence_is_evaluator_error(self) -> None:
+        config = self.repo.config()
+        config["external_hard_checks"] = ["dependency-cycles"]
+        self.repo.config(config)
+        commit = self.repo.commit("require cycle check")
+        external = self.repo.root / "external.json"
+        external.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "checks": [
+                        {"id": "dependency-cycles", "status": "pass", "evidence": "TBD"}
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        report = self.report(commit, commit, external)
+
+        self.assertEqual(report["status"], "evaluator_error")
+
     def test_excluded_generated_file_does_not_create_growth(self) -> None:
         self.repo.config()
         base = self.repo.commit("initial")
