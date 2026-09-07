@@ -1,6 +1,43 @@
 {
   "external_hard_checks": [],
-  "last_decision": null,
+  "last_decision": {
+    "base_commit": "dcf330a9813a1ecccaebfe2991fb78b902fc2f42",
+    "evidence": [
+      "Seventeen standard-library tests exercise valid, invalid, bypass, expiry, and recovery transitions",
+      "The skill validator accepts the revised skill and actionlint accepts the repository workflow",
+      "The guard reports this repository transition with exact deltas and a stable failure fingerprint"
+    ],
+    "force": "Long-running agentic development needs a deterministic promotion gate in addition to prompt guidance",
+    "id": "executable-complexity-invariant",
+    "lifecycle": "permanent",
+    "observed_deltas": [
+      {
+        "after": 14,
+        "before": 6,
+        "id": "tracked_files"
+      },
+      {
+        "id": "sensitive_paths",
+        "paths": [
+          ".github/workflows/complexity-guard.yml",
+          "action.yml",
+          "five-step-engineering/SKILL.md",
+          "five-step-engineering/references/complexity-control.md",
+          "five-step-engineering/scripts/complexity_guard.py"
+        ]
+      },
+      {
+        "id": "governance_policy",
+        "sections": [
+          "scope"
+        ]
+      }
+    ],
+    "owner": "The five-step-engineering repository owns the guard, policy, action, and release lifecycle",
+    "removal_or_review_condition": "Review on a major guard release or when evidence shows the invariant causes systematic false decisions",
+    "simplest_rejected_alternative": "Prompt-only review cannot enforce a transition invariant or produce a stable machine-readable failure",
+    "target": "Prevent observable unearned structural growth from entering protected branches"
+  },
   "schema_version": 1,
   "scope": {
     "exclude": [
