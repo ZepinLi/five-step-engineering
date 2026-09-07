@@ -10,7 +10,6 @@ import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "five-step-engineering/scripts/complexity_guard.py"
 SPEC = importlib.util.spec_from_file_location("complexity_guard", SCRIPT)

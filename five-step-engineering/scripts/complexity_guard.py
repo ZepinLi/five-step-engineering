@@ -23,7 +23,6 @@ from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-
 SCHEMA_VERSION = 1
 DEFAULT_CONFIG_PATH = ".five-step-engineering.json"
 DEFAULT_REPORT_PATH = ".five-step-engineering-report.json"
