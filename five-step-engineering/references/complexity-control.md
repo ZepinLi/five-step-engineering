@@ -12,7 +12,7 @@ that a metric can decide whether a design is good.
 3. [Project policy](#project-policy)
 4. [Run the guard](#run-the-guard)
 5. [Resolve a failed check](#resolve-a-failed-check)
-6. [CI enforcement](#ci-enforcement)
+6. [Automation boundary](#automation-boundary)
 7. [Evidence base](#evidence-base)
 
 ## Invariant and boundary
@@ -28,14 +28,14 @@ Accept(S -> S') iff
   and every declared hard check passes
 ```
 
-If the initial protected branch satisfies the condition and every accepted
-transition preserves it, observable unearned complexity cannot accumulate on
-that branch. This is an inductive safety invariant, not a proof that the
+If the initial accepted state satisfies the condition and every promoted
+transition preserves it, observable unearned complexity cannot accumulate in
+that state sequence. This is an inductive safety invariant, not a proof that the
 program is globally minimal.
 
-The guarantee is conditional on complete observation, an enforced CI check,
-protected policy, honest evidence, and a correct evaluator. General program
-semantics cannot be reduced to a decidable minimality test: non-trivial
+The guarantee is conditional on complete observation at the chosen promotion
+boundary, policy integrity, honest evidence, and a correct evaluator. General
+program semantics cannot be reduced to a decidable minimality test: non-trivial
 semantic properties are undecidable in general, and shortest descriptions are
 not computable in the unrestricted case. Keep those limits visible rather than
 turning proxy metrics into a false theorem.
@@ -74,10 +74,9 @@ guard consumes JSON; it never executes commands found in project policy.
 
 ## Project policy
 
-`complexity_guard.py init --write` creates `.five-step-engineering.json`, a
-small pull-request checklist, and a GitHub workflow. It refuses to overwrite
-existing files. Review its proposed output without `--write` first when the
-repository already has CI or contribution templates.
+`complexity_guard.py init --write` creates only
+`.five-step-engineering.json`. It refuses to overwrite an existing policy.
+Review its proposed output without `--write` first.
 
 The policy has one current decision. Git history is the audit log, so decision
 files do not accumulate:
@@ -204,25 +203,16 @@ If the failure fingerprint is unchanged, change code, evidence, observation,
 or policy rationale before retrying. Escalate only when the next meaningful
 state change needs external facts, authority, or an irreversible trade-off.
 
-## CI enforcement
+## Automation boundary
 
-The repository action is consumed at a release tag:
+The guard is a local executable and does not install or mandate CI, remote
+actions, branch protection, pull-request templates, secrets, or repository
+settings. A project may call it from its own automation, but that integration
+belongs to the project and remains outside this skill.
 
-```yaml
-- uses: ZepinLi/five-step-engineering@v1.0.0
-  with:
-    base-ref: ${{ github.event.pull_request.base.sha }}
-    head-ref: ${{ github.event.pull_request.head.sha }}
-```
-
-Use `pull_request`, fetch full history, grant only `contents: read`, and do not
-expose secrets. Make the `complexity-guard` job a required check on the
-protected branch. Protect the workflow and policy through normal review;
-otherwise a contributor can remove the monitor instead of satisfying it.
-
-The action writes a step summary and uploads its JSON report even when the gate
-is unresolved. Pin `v1.0.0` for reproducibility; move to a later release only
-through an explicit dependency update.
+Whatever invokes the guard must preserve the same boundary: provide complete
+Git refs and declared external reports, treat evaluator errors as invalid
+observations, and never weaken policy merely to manufacture a pass.
 
 ## Evidence base
 

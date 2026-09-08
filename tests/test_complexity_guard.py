@@ -22,7 +22,7 @@ class GitRepo:
     def __init__(self, root: Path) -> None:
         self.root = root
         self.git("init", "-q")
-        self.git("config", "user.email", "guard@example.com")
+        self.git("config", "user.email", "guard@invalid")
         self.git("config", "user.name", "Complexity Guard")
 
     def git(self, *args: str) -> str:
@@ -379,17 +379,14 @@ class ComplexityGuardTests(unittest.TestCase):
         self.repo.config()
 
         with self.assertRaises(guard.GuardError):
-            guard._init(self.repo.root, True, "v1.0.0")
+            guard._init(self.repo.root, True)
 
-    def test_init_writes_a_pinned_workflow_and_checklist(self) -> None:
-        code = guard._init(self.repo.root, True, "v1.0.0")
+    def test_init_writes_only_local_policy(self) -> None:
+        code = guard._init(self.repo.root, True)
 
         self.assertEqual(code, 0)
-        workflow = (self.repo.root / ".github/workflows/five-step-engineering.yml").read_text()
-        checklist = (self.repo.root / ".github/pull_request_template.md").read_text()
-        self.assertIn("ZepinLi/five-step-engineering@v1.0.0", workflow)
-        self.assertIn("actions/checkout@11d5960a", workflow)
-        self.assertIn("Positive structural deltas", checklist)
+        self.assertTrue((self.repo.root / guard.DEFAULT_CONFIG_PATH).is_file())
+        self.assertFalse((self.repo.root / ".github").exists())
 
 
 if __name__ == "__main__":

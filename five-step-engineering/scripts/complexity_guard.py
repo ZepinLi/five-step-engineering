@@ -691,44 +691,9 @@ def _emit(report: Mapping[str, Any], report_path: Path | None, summary_path: Pat
     sys.stdout.write(encoded)
 
 
-def _workflow(action_ref: str) -> str:
-    return f"""name: complexity-guard
-
-on:
-  pull_request:
-
-permissions:
-  contents: read
-
-jobs:
-  complexity-guard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          fetch-depth: 0
-      - uses: ZepinLi/five-step-engineering@{action_ref}
-        with:
-          base-ref: ${{{{ github.event.pull_request.base.sha }}}}
-          head-ref: ${{{{ github.event.pull_request.head.sha }}}}
-"""
-
-
-CHECKLIST = """## Five-Step Engineering
-
-- [ ] The real constraint and simplest direct baseline are named.
-- [ ] Positive structural deltas are recorded in `.five-step-engineering.json`.
-- [ ] Superseded paths and temporary investigative structure were removed.
-- [ ] Every retained temporary item has an owner, review date, and removal condition.
-- [ ] Relevant behavior, architecture, and failure checks pass.
-"""
-
-
-def _init(repo: Path, write: bool, action_ref: str) -> int:
+def _init(repo: Path, write: bool) -> int:
     files = {
         repo / DEFAULT_CONFIG_PATH: json.dumps(default_config(), indent=2, sort_keys=True) + "\n",
-        repo / ".github/workflows/five-step-engineering.yml": _workflow(action_ref),
-        repo / ".github/pull_request_template.md": CHECKLIST,
     }
     if not write:
         for path, content in files.items():
@@ -785,7 +750,6 @@ def _parser() -> argparse.ArgumentParser:
     init = subparsers.add_parser("init", help="print or create an opt-in project configuration")
     init.add_argument("--repo", default=".")
     init.add_argument("--write", action="store_true")
-    init.add_argument("--action-ref", default="v1.0.0")
 
     for name in ("inspect", "check"):
         command = subparsers.add_parser(name)
@@ -812,7 +776,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "init":
         try:
-            return _init(Path(args.repo).resolve(), args.write, args.action_ref)
+            return _init(Path(args.repo).resolve(), args.write)
         except GuardError as exc:
             parser.error(str(exc))
     if args.command == "accept":

@@ -83,9 +83,9 @@ choices; the locally closest action may have worse total cost or risk.
 
 ## Executable gate failures
 
-A failed test or CI check is a discrepancy report, not an instruction to end
-the task. When the repository uses the executable complexity guard, read its
-JSON rather than inferring from the exit code alone:
+A failed test or automated check is a discrepancy report, not an instruction
+to end the task. When the repository uses the executable complexity guard,
+read its JSON rather than inferring from the exit code alone:
 
 1. **Validate the evaluator.** Exit `3` means the baseline, Git history,
    configuration, external report, or checker is incomplete. Repair the
@@ -104,10 +104,10 @@ JSON rather than inferring from the exit code alone:
 
 The `failure_fingerprint` identifies an unchanged violation state. Never retry
 that state without changing code, evidence, observation, or the governing
-frame. Do not make progress by disabling the workflow, hiding owned code in an
+frame. Do not make progress by disabling the check, hiding owned code in an
 exclusion, weakening a required external check, or replacing evidence with a
-checkbox. A protected check blocks merging an unresolved state while leaving
-local experiments and evidence-producing commits free to continue.
+checkbox. A verification gate blocks promotion of an unresolved state while
+leaving local experiments and evidence-producing changes free to continue.
 
 ## Progress and stability
 

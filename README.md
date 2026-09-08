@@ -55,15 +55,15 @@ distills primary work on data invariants, information hiding, quality scenarios,
 and problem-first use of patterns.
 For repositories that opt in, its
 [complexity guard](five-step-engineering/references/complexity-control.md)
-turns observable structural growth into an explicit, CI-enforced decision while
-keeping failed checks inside the recursive engineering loop.
+turns observable structural growth into an explicit, machine-readable decision
+while keeping failed checks inside the recursive engineering loop.
 
 ## Install
 
 Clone once:
 
 ```bash
-git clone https://github.com/ZepinLi/five-step-engineering.git
+git clone <repository-url>
 cd five-step-engineering
 ```
 
@@ -104,32 +104,25 @@ in-scope blockers instead of stopping at the first failed gate.
 ## Complexity guard (opt-in)
 
 The skill also ships a language-independent, standard-library Python guard for
-Git repositories. Preview the files it would add to a target project:
+Git repositories. Preview its local project policy:
 
 ```bash
 python3 five-step-engineering/scripts/complexity_guard.py init --repo .
 ```
 
-Add `--write` only after reviewing the generated policy, pull-request checklist,
-and workflow. The workflow consumes the centrally maintained
-`ZepinLi/five-step-engineering@v1.0.0` GitHub Action. It blocks unexplained
-structural transitions from merging, emits a machine-readable report, and sends
-the agent back through the smallest relevant five-step loop.
+Add `--write` only after reviewing the generated policy. The guard is local and
+automation-neutral: it does not install workflows, alter branch protection, or
+contact remote services. An unresolved report sends the agent back through the
+smallest relevant five-step loop.
 
 See the [complexity-control reference](five-step-engineering/references/complexity-control.md)
-for the invariant, configuration, external-check interface, and branch
-protection requirements.
+for the invariant, configuration, external-check interface, and promotion
+boundary.
 
 ## Structure
 
 ```text
 five-step-engineering/
-├── action.yml
-├── .five-step-engineering.json
-├── .github/
-│   ├── pull_request_template.md
-│   └── workflows/
-│       └── complexity-guard.yml
 ├── README.md
 ├── LICENSE
 ├── tests/
