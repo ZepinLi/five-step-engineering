@@ -20,10 +20,10 @@ flowchart TB
         C -->|"pass"| A["5 · Automate"]
     end
     I --> P
-    P --> G{"Evidence +<br/>complexity invariant"}
+    P --> G{"Behavior +<br/>structural review"}
     G -->|"pass"| O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    G -. "not resolved" .-> L["Resolve smallest discrepancy<br/>nested five-step loop"]
+    G -. "not resolved" .-> L["Resolve cause · retire old paths<br/>nested five-step loop"]
     L -. "new evidence" .-> P
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
@@ -38,6 +38,8 @@ flowchart TB
 Advance only when the current evidence gate is resolved. A failed gate holds
 stage progression—not problem solving—while the smallest blocker is resolved
 recursively and returned to its parent gate.
+Review structure throughout development, including affected callers, state,
+and dependencies.
 
 ## Origins
 
@@ -51,12 +53,8 @@ This skill adds explicit evidence gates, reversibility safeguards, and a
 informed by risk-driven iteration, feedback control, recursive problem solving,
 and evidence on agent self-correction.
 Its [structural-design reference](five-step-engineering/references/structural-design.md)
-distills primary work on data invariants, information hiding, quality scenarios,
-and problem-first use of patterns.
-For repositories that opt in, its
-[complexity guard](five-step-engineering/references/complexity-control.md)
-turns observable structural growth into an explicit, machine-readable decision
-while keeping failed checks inside the recursive engineering loop.
+distills primary work on data invariants, information hiding, software
+evolution, and the limits of complexity measures into development decisions.
 
 ## Install
 
@@ -101,23 +99,20 @@ skill automatically from its description. It reports target, evidence,
 decision, and next action; for action requests it keeps resolving safe,
 in-scope blockers instead of stopping at the first failed gate.
 
-## Complexity guard (opt-in)
+## Keep structure intentional
 
-The skill also ships a language-independent, standard-library Python guard for
-Git repositories. Preview its local project policy:
+Before adding a mechanism, explain why the direct solution cannot meet the
+current need and weigh the costs added and removed. After each meaningful
+change, follow affected callers and state owners, retire superseded paths, and
+verify the complete behavior using the project's existing tools.
 
-```bash
-python3 five-step-engineering/scripts/complexity_guard.py init --repo .
-```
+Failures return to the five steps: question the requirement, repair the
+representation or boundary, and check again. Keep defensive mechanisms tied to
+concrete failure or security needs. Ordinary edits need no forms or new tools.
 
-Add `--write` only after reviewing the generated policy. The guard is local and
-automation-neutral: it does not install workflows, alter branch protection, or
-contact remote services. An unresolved report sends the agent back through the
-smallest relevant five-step loop.
-
-See the [complexity-control reference](five-step-engineering/references/complexity-control.md)
-for the invariant, configuration, external-check interface, and promotion
-boundary.
+The skill offers a reasoning discipline. Formal guarantees require precise
+properties and proofs; tests, review, and complexity metrics alone cannot
+establish universal minimality or prevent all future design erosion.
 
 ## Structure
 
@@ -125,15 +120,10 @@ boundary.
 five-step-engineering/
 ├── README.md
 ├── LICENSE
-├── tests/
-│   └── test_complexity_guard.py
 └── five-step-engineering/
     ├── SKILL.md
-    ├── scripts/
-    │   └── complexity_guard.py
     ├── references/
     │   ├── closed-loop-engineering.md
-    │   ├── complexity-control.md
     │   └── structural-design.md
     └── agents/
         └── openai.yaml

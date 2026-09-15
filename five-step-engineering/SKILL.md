@@ -21,8 +21,9 @@ Use this ordered decision protocol, scaled to the decision at hand:
 - Treat unknown mechanisms as investigation candidates, not deletion candidates.
 - Do not count moving complexity, risk, or manual work to users, downstream systems, or operations as deletion.
 - Seek the minimum sufficient system, not maximum deletion.
-- Preserve the earned-complexity invariant: every positive structural delta
-  must trace to a real force, evidence, clear ownership, and a lifecycle.
+- Justify added structure with a current constraint and evidence; retire what
+  it replaces; fix the representation, ownership, or boundary that caused a
+  recurring problem. Written justification alone does not establish necessity.
 - Keep the order mandatory. A failed gate blocks promotion, not problem solving.
 - If a later step invalidates an assumption, open a nested five-step loop around that assumption, resolve it, then return to the gate that owns it.
 
@@ -34,12 +35,14 @@ Before starting:
 2. Separate hard constraints from the proposed solution; name unacceptable failures.
 3. Scale evidence and reversibility to blast radius, irreversibility, and uncertainty.
 
-If the repository contains `.five-step-engineering.json`, read
-[references/complexity-control.md](references/complexity-control.md) and inspect
-the current transition before designing more structure. Do not install or
-weaken repository governance without authorization and an earned decision.
+Before designing changes to code structure, data, interfaces, or architecture,
+read [references/structural-design.md](references/structural-design.md). Scale
+its reasoning to the task; a small edit needs no fixed form or new record file.
 
-- Stay within the requested scope. For a narrow change, note broader deletion opportunities without turning them into an unsolicited redesign.
+- Follow callers, state ownership, and dependencies into related modules to
+  resolve the current problem completely. Stop expanding when the affected
+  behavior and boundaries are coherent; leave unrelated redesign outside the
+  task and respect any explicit limits on changes.
 - During an incident, restore service first; analyze the design afterward.
 - For public APIs, persisted formats, schemas, and unknown external consumers, analyze compatibility and deprecate safely instead of removing them abruptly.
 - Preserve legal, safety, security, privacy, and data-integrity outcomes. Question their assumptions and implementation, not the protected outcome.
@@ -61,26 +64,40 @@ weaken repository governance without authorization and an earned decision.
 ### 2. Delete the part or process
 
 - Prefer removing a whole component, abstraction, step, handoff, state, flag, or config over improving it.
-- Reconcile the change before promotion: remove superseded paths, duplicate
-  sources of truth, expired compatibility layers, and temporary investigative
-  structure that no longer changes the decision.
+- When replacing a mechanism, update its consumers and remove superseded paths,
+  duplicate truth, obsolete configuration, and investigative scaffolding. Keep
+  necessary migration or compatibility paths only for real consumers, with an
+  owner and an exit condition recorded through the project's existing practice.
 - Delete speculative layers, wrappers, patterns, services, and extension points; first check whether the language, platform, or existing component already provides the capability.
 - Ask: "If this did not exist, what concrete failure would occur?" Answer with a check, not intuition.
 - Count net system cost. Treat a deletion that exports work or failure modes elsewhere as a possible regression.
-- Keep changes narrow and separable. For risky changes, use a bounded, observable experiment with rollback; never alter unrelated user work or create commits unless asked.
+- Keep implementation steps separable while covering the related modules needed
+  for correctness. For risky changes, use a bounded, observable experiment with
+  rollback; preserve unrelated user work and existing authorization boundaries.
 - Use "roughly 10% gets added back" only as a calibration prompt across repeated low-risk experiments, never as a quota or universal law.
 
 **Gate:** Delete on evidence of net benefit, retain on evidence of necessity, and investigate consequential uncertainty.
 
 ### 3. Simplify and optimize
 
-- For code, data-model, or architecture work, read [references/structural-design.md](references/structural-design.md) and scale its checks to the decision.
 - Design what survived in this order: legal data and state transitions; ownership and boundaries; dependency direction and failure behavior; then patterns or frameworks.
-- Name the authoritative source and owner for each fact; mark caches and derived views as such. Make important invariants explicit, keep representations private, and validate untrusted data at the boundary before converting it to a valid domain value.
+- Name the authoritative source and owner for each fact; give caches and derived
+  views explicit update or invalidation rules. Make important invariants
+  explicit, keep representations private, and convert untrusted boundary input
+  to valid domain values. Prefer representations that exclude invalid states.
 - Give each non-trivial module one coherent purpose and a design decision or source of volatility to hide. Prefer a small, stable interface over control flags, broad records, mutable internals, or hypothetical options.
-- Before adding a pattern or abstraction, name the concrete force, the simplest direct solution, the added concepts and liabilities, and the evidence that earns them. Introduce only its smallest useful form.
+- Before adding an abstraction, state, dependency, configuration option, or
+  defensive mechanism, explain the current force, why directly changing the
+  existing implementation is insufficient, and the costs added and removed.
+  Introduce only its smallest useful form. Merge duplication by shared meaning
+  and change responsibility, not visual similarity.
 - Make control flow, data flow, state ownership, and dependency direction explainable. Add a diagram or decision record only when it answers a named concern.
 - State relevant errors, side effects, ordering, idempotency, compatibility, and partial-failure behavior; do not call a design robust without a failure scenario and check.
+- Require a concrete boundary, fault, or security need for validation, hashing,
+  retries, and fallback. Preserve necessary protections; avoid redundant
+  internal checks and silent recovery that conceals a broken contract. Use
+  direct comparison for ordinary local state; do not build hash-based review
+  or retry bookkeeping.
 - Optimize only a measured bottleneck in what survived.
 - Verify the end-to-end outcome; a better local metric can hide a worse system.
 
@@ -113,41 +130,22 @@ weaken repository governance without authorization and an earned decision.
 - **Structural integrity:** Test invalid construction, legal and illegal state transitions, boundary values, aliasing, error paths, and serialization round trips where relevant.
 - **Change locality:** Exercise one likely change or failure and inspect which modules, interfaces, data, and operations it crosses; use dependency and co-change history as clues, not universal scores.
 - **Compatibility:** For public or persisted contracts, test relevant old/new producer-consumer combinations and distinguish source, wire, and semantic compatibility.
-- **Complexity transition:** When the repository opts into the executable
-  guard, run it against the intended base and candidate commits. Treat line
-  count and change entropy as diagnostic signals, not verdicts.
+- **Structural completion:** After each meaningful implementation step, check
+  what was added, moved, and retired across affected callers, state, and
+  configuration against the original outcome. Resolve duplication or misplaced
+  responsibility before extending it; use existing project checks. Passing
+  tests does not establish structural coherence.
+  Treat line counts and entropy as diagnostic signals; meaningful growth may
+  be necessary, and neither deletion quotas nor compressed code establish quality.
 - Do not equate "not observed" with "cannot occur." State sampling limits.
 - If evidence is unavailable, mark the conclusion unverified and make the missing evidence the next child problem. It blocks stage promotion, not the task.
-
-## Preserve the complexity invariant
-
-For code changes, reason about concepts, legal states and truth sources,
-dependencies and cycles, interfaces and configuration, exceptional paths,
-runtime and failure surfaces, and temporary structure. Do not collapse this
-vector into a universal score.
-
-When `.five-step-engineering.json` exists:
-
-1. Run `scripts/complexity_guard.py inspect` before accepting structural growth.
-2. Prefer deletion or the simplest direct baseline. If positive structure is
-   necessary, record the exact observed delta, force, rejected baseline,
-   evidence, owner, lifecycle, and removal or review condition.
-3. Run `check` before promoting the change. Exit `2` opens a nested five-step
-   loop around the smallest unresolved delta; exit `3` opens one around the
-   evaluator. Neither ends the development task.
-4. Re-run the same command after changing code, evidence, observation, or
-   policy. Never repeat an unchanged failure or manufacture passage by
-   disabling checks, widening exclusions, or entering placeholder evidence.
-
-The guard enforces only observable structure. Semantic necessity still
-requires engineering judgment and review.
 
 ## Resolve failed gates recursively
 
 When a gate does not resolve on the first pass, read [references/closed-loop-engineering.md](references/closed-loop-engineering.md). Hold later stages and keep working on the current gate:
 
 1. Name the discrepancy: the gate criterion, observed evidence, remaining uncertainty, and consequence of being wrong.
-2. Check the evaluator before changing the product. Locate the failure in the requirement, assumption, evidence, test or environment, or implementation.
+2. Check the evaluator before changing the product. Locate the failure in the requirement, representation, ownership, boundary, test, environment, or implementation before adding another patch.
 3. Make the highest-value unresolved discrepancy a strictly narrower child problem. Apply all five steps to it from step 1.
 4. State a prediction and take the smallest safe, reversible action that can distinguish alternatives. Observe the result and update the evidence.
 5. Return only the new evidence, decision, or necessary artifact to the parent. Re-evaluate the same parent gate and resume from it when resolved.
@@ -175,7 +173,8 @@ Return only what helps the decision:
 3. **Decision:** State what was deleted, kept, revised, or abandoned and how each reached gate was resolved. For structural work, include the data invariants, boundaries and dependencies, failure behavior, and simplest rejected alternative needed to justify the design.
 4. **Next:** For an action request, perform the next safe in-scope action and keep re-evaluating; do not hand resolvable work back to the user. If genuinely blocked, give the exact external condition, evidence and attempts so far, and smallest unblocking request.
 
-For an opted-in repository, also report `Complexity delta: none | earned items`
-and `Superseded or temporary structure: none | bounded exception`.
+For structural changes, include the necessary additions, retired paths, and
+remaining compatibility obligations in the decision. Report unresolved
+constraints and evidence limits directly; do not claim universal minimality.
 
 Omit empty sections. Mention deferred optimization or automation only when doing so prevents wasted work now.

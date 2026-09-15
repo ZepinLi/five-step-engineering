@@ -9,7 +9,7 @@ repeating blind attempts, or growing a permanent orchestration system.
 1. [The control criterion](#the-control-criterion)
 2. [Minimal loop state](#minimal-loop-state)
 3. [Recursive recovery](#recursive-recovery)
-4. [Executable gate failures](#executable-gate-failures)
+4. [Development failures](#development-failures)
 5. [Progress and stability](#progress-and-stability)
 6. [Reframing and learning](#reframing-and-learning)
 7. [Resolution and escalation](#resolution-and-escalation)
@@ -35,27 +35,14 @@ the discipline to make progress observable and bounded.
 
 ## Minimal loop state
 
-Keep only enough state to return cleanly to the parent:
+Keep enough context to return to the parent: its outcome, gate criterion,
+discrepancy, assumptions, protected invariants, and the child's return
+condition. Compare the predicted result of an action with the observed result
+and state what changed. Scale effort to risk and information value.
 
-```text
-Gate frame
-  parent outcome and owning gate
-  criterion and observed discrepancy
-  assumptions and hard invariants
-  evidence digest and frame version
-  progress measure and risk-scaled budget
-  child deliverable and return condition
-
-Attempt
-  predicted result and chosen action
-  actual observation and evidence delta
-  disposition and retry condition
-```
-
-This is a reasoning record, not a requirement to add classes, storage, or a
-workflow engine. For a small task it may be one sentence. Version the frame
-only when a goal, constraint, boundary, success criterion, or material
-assumption changes.
+Use the conversation or the project's existing decision record. A small task
+may need one sentence. Update the reasoning when an assumption or criterion
+changes; do not create a tracking system for it.
 
 ## Recursive recovery
 
@@ -81,33 +68,27 @@ Prefer one active child that changes the parent decision over a tree of
 interesting investigations. Keep an alternative available for consequential
 choices; the locally closest action may have worse total cost or risk.
 
-## Executable gate failures
+## Development failures
 
-A failed test or automated check is a discrepancy report, not an instruction
-to end the task. When the repository uses the executable complexity guard,
-read its JSON rather than inferring from the exit code alone:
+Read the actual failure from the project's test, compiler, architecture check,
+or observed behavior. Check its assumptions and environment before trusting
+the diagnosis. Fix the observation channel if it is invalid.
 
-1. **Validate the evaluator.** Exit `3` means the baseline, Git history,
-   configuration, external report, or checker is incomplete. Repair the
-   observation channel before changing product behavior.
-2. **Own one discrepancy.** Exit `2` means promotion is unresolved. Select the
-   smallest unearned delta, expired temporary item, or hard-check failure that
-   can change the verdict.
-3. **Reduce before justifying.** Delete the path, merge duplicate state, narrow
-   the interface, or use the direct baseline if it satisfies the real force.
-4. **Record only necessary structure.** When reduction cannot meet a verified
-   constraint, match the observed delta exactly and attach evidence, ownership,
-   and a permanent or bounded temporary lifecycle.
-5. **Recompose and rerun.** Remove obsolete implementations, diagnostic
-   scaffolding, and expired compatibility paths, then execute the report's
-   `rerun_command` against the same parent transition.
+Apply the recursive loop to the smallest concrete discrepancy. Before adding a
+guard, retry, or alternate path, inspect the representation, owning module,
+contract, and requirement that produced the failure. Deleting duplicate state
+or repairing a boundary may eliminate the entire failure class. Add a
+mechanism only when a verified constraint rules out the simpler alternative.
 
-The `failure_fingerprint` identifies an unchanged violation state. Never retry
-that state without changing code, evidence, observation, or the governing
-frame. Do not make progress by disabling the check, hiding owned code in an
-exclusion, weakening a required external check, or replacing evidence with a
-checkbox. A verification gate blocks promotion of an unresolved state while
-leaving local experiments and evidence-producing changes free to continue.
+Trace related callers and state owners far enough to repair the end-to-end
+behavior. Remove superseded paths and investigative artifacts, then rerun the
+owning check and relevant regressions. Inspect the retained structure even
+when tests pass. Necessary compatibility paths still require real consumers,
+an owner, and an exit condition.
+
+Do not weaken a check or rewrite a justification to manufacture success.
+Unresolved behavior or structure stays in this loop while safe experiments
+and repairs continue.
 
 ## Progress and stability
 
@@ -120,9 +101,9 @@ Maintain both:
   new evidence falsifies and replaces a governing assumption.
 
 Do not use token count, prose volume, or another action taken as progress.
-Normalize an attempted state by its frame version, gate, evidence, assumptions,
-and action. Do not retry the same state and action after the same result unless
-the retry condition or evidence has changed.
+Describe repeated failures using the actual code, assumptions, evidence, and
+action. Do not repeat the same failed attempt unless its evidence or retry
+condition changes; no hashes or additional state registry are needed.
 
 Avoid unstable correction:
 

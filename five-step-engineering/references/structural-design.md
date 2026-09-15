@@ -1,21 +1,23 @@
 # Structural Design
 
 Use this reference only when the task changes code structure, domain data,
-interfaces, or architecture. Apply it inside Five-Step Engineering steps 1–3;
-do not turn it into a pattern-first design phase.
+interfaces, or architecture. Read it before structural design and apply it
+through implementation and verification within the five steps; do not turn it
+into a separate design or governance process.
 
 ## Contents
 
 1. [Minimum-sufficient design](#minimum-sufficient-design)
 2. [Earned complexity](#earned-complexity)
-3. [Complexity as controlled information](#complexity-as-controlled-information)
-4. [Quality scenarios](#quality-scenarios)
-5. [Data and state](#data-and-state)
-6. [Boundaries and dependencies](#boundaries-and-dependencies)
-7. [Robustness and compatibility](#robustness-and-compatibility)
-8. [Architecture evidence](#architecture-evidence)
-9. [Compact design record](#compact-design-record)
-10. [Evidence base](#evidence-base)
+3. [Entropy and measurement](#entropy-and-measurement)
+4. [Structural invariants and their limits](#structural-invariants-and-their-limits)
+5. [Quality scenarios](#quality-scenarios)
+6. [Data and state](#data-and-state)
+7. [Boundaries and dependencies](#boundaries-and-dependencies)
+8. [Robustness and compatibility](#robustness-and-compatibility)
+9. [Development and retirement](#development-and-retirement)
+10. [Architecture evidence](#architecture-evidence)
+11. [Compact design record](#compact-design-record)
 
 ## Minimum-sufficient design
 
@@ -27,7 +29,8 @@ contains change and failure, and remains explainable.
 Structural beauty is coherence, not decoration:
 
 - **Fit:** the structure follows real domain and operational forces rather than
-  framework fashion.
+  framework fashion, echoing Alexander's
+  [context–form relationship](https://christopher-alexander-ces-archive.org/book/notes-on-the-synthesis-of-form/).
 - **Integrity:** names, data, control flow, ownership, errors, and boundaries
   tell one consistent story; similar cases look similar and real differences
   stay visible.
@@ -38,8 +41,9 @@ Structural beauty is coherence, not decoration:
 - **Evidence:** claims such as robust, flexible, or scalable name an observable
   scenario and a check.
 
-Elegance must lower explanation and reasoning cost. It never excuses cleverness
-or an extra abstraction.
+Treat clarity as an engineering constraint
+([Dijkstra](https://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD648.html)).
+Elegance must lower reasoning cost, never excuse cleverness or an extra abstraction.
 
 Minimum-sufficient does not mean the fewest lines, modules, services, or
 features. Distinguish three states:
@@ -57,7 +61,10 @@ Do not erase essential domain complexity to make a diagram small. Remove
 accidental complexity around it, and add redundancy, isolation, validation,
 audit, or compatibility only when a concrete scenario earns the cost. This is
 a synthesis of problem fidelity, conceptual integrity, information hiding, and
-local reasoning rather than an objective beauty metric.
+local reasoning. Brooks distinguishes essential and accidental complexity in
+[No Silver Bullet](https://www.cs.unc.edu/techreports/86-020.pdf); his
+[conceptual-integrity argument](https://www.informit.com/content/images/9780201835953/samplepages/0201835959.pdf)
+also motivates making the design tell one coherent story.
 
 ## Earned complexity
 
@@ -68,26 +75,30 @@ its construction and carrying costs; modularity is not free
 ([Baldwin and Clark](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=312404),
 [Sullivan et al.](https://doi.org/10.1145/503209.503224)).
 
-Before adding an interface, layer, factory, strategy, plugin, service, queue,
-cache, replica, configuration option, control plane, framework, or other
-indirection, record:
+Before adding an abstraction, state, dependency, configuration option, or
+defensive mechanism, answer:
 
-1. **Force:** the required semantic, invariant, observed variation, failure,
-   scale threshold, or quality scenario it addresses.
-2. **Baseline:** the simplest end-to-end design that meets current needs.
-3. **Delta:** the concepts, state, dependencies, coordination, deployment,
-   failure modes, and operational work the mechanism adds.
-4. **Payoff:** what capability, containment, independent evolution, or measured
-   system-level outcome the added structure buys.
-5. **Evidence:** the test, experiment, incident, change history, or credible
-   high-impact scenario supporting the trade.
-6. **Lifecycle:** its owner, review trigger, and condition for removal.
+1. What current behavior, quality scenario, or observed maintenance problem
+   requires it?
+2. Why is directly changing the existing implementation insufficient? Check
+   what the language, platform, or existing module already provides.
+3. What concepts, coordination, failure handling, and operating costs does it
+   add and remove? Which test, measurement, or architectural fact supports that
+   trade?
+
+An explanation is a claim to examine, not proof of necessity. A small change
+needs no form or file. For lasting decisions, use the project's existing record
+and identify the owner and removal or review condition. Do not impose a
+one-in/one-out rule: a necessary boundary may increase code while reducing
+reasoning cost across the system.
 
 If the case is uncertain, buy the cheaper option: a narrow local seam, an
 experiment, a migration test, or a recorded decision. Design earlier for
 hard-to-reverse public contracts, persisted data, trust boundaries,
 consistency and partitioning choices, safety constraints, and destructive
-migrations; defer local, observable, reversible choices.
+migrations; defer local, observable, reversible choices. Fowler's
+[YAGNI](https://martinfowler.com/bliki/Yagni.html) defers speculative capability
+while explicitly supporting refactoring that keeps present code easy to change.
 
 Treat these as over-design signals, not automatic verdicts:
 
@@ -119,60 +130,75 @@ coordinate when independently valid operations could combine to violate a
 named invariant, not merely because distribution feels risky
 ([Bailis et al.](https://doi.org/10.14778/2735508.2735509)).
 
-## Complexity as controlled information
+## Entropy and measurement
 
-Treat structural disorder as unexplained degrees of freedom, not as a physical
-substance. Thermodynamic entropy supplies a useful warning that unattended
-systems tend to lose order, but it does not prove that a repository must grow.
-Shannon entropy measures uncertainty in a distribution; for code, it can show
-how widely a change is dispersed without saying whether the change is good.
-Minimum description length suggests counting both a mechanism and the
-exceptions or data needed to make it fit, but the shortest source text is not
-necessarily the clearest or safest design
-([Rissanen](https://doi.org/10.1016/0005-1098(78)90005-5)).
+Keep three ideas distinct:
 
-Use this structural vector instead of one weighted score:
+- **Thermodynamic entropy:** a physical concept. Applying its name to software
+  disorder is a metaphor, not a law proving inevitable code growth.
+- **Shannon entropy:** uncertainty in a specified probability distribution
+  ([Shannon, 1948](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf)).
+  Change dispersion can be defined this way; it does not reveal whether the
+  change is necessary. Hassan's study found predictive value for change
+  complexity in six projects, while noting that refactoring can also increase
+  dispersion ([ICSE 2009](https://sail.cs.queensu.ca/data/pdfs/ICSE2009_PredictingFaultsUsingTheComplexityOfCodeChanges.pdf)).
+- **Minimum description length:** model selection by description cost
+  ([Rissanen, 1978](https://research.ibm.com/publications/modeling-by-shortest-data-description)).
+  The design analogy is to consider a mechanism together with its interfaces,
+  configuration, exceptions, and caller obligations. Compressing source text
+  does not establish a better design.
 
-- independently meaningful concepts and responsibilities;
-- legal states, transitions, and authoritative sources of truth;
-- dependency edges, cycles, and likely change propagation;
-- public contracts, configuration dimensions, and compatibility variants;
-- exceptional or duplicated paths;
-- runtime coordination, failure modes, and operational surfaces; and
-- temporary investigative, migration, and rollout structure.
+Review concepts, state and truth sources, dependencies, interfaces and
+configuration, exceptional paths, operational failure surfaces, and temporary
+structure separately. A useful simplification removes an invalid state
+combination, duplicate truth, implicit dependency, needless exception, or
+obsolete path. It needs no universal entropy score.
 
-A positive delta is earned only when it names a present force, shows why the
-simple baseline fails, supplies relevant evidence, has one lifecycle owner,
-and states when it is removed or reviewed. Before closing the parent change,
-recompose it: delete superseded implementations, collapse parallel truths,
-remove probes and scaffolding, and bound any compatibility path that must
-remain. Required complexity may grow; unowned or unexplained complexity may
-not.
+Weyuker found that none of four evaluated syntactic complexity measures met all
+nine proposed properties ([1988](https://doi.org/10.1109/32.6178)). Briand,
+Morasca, and Basili require measures to have theoretically justified properties
+([1996](https://www.cs.umd.edu/~basili/publications/journals/J58.pdf)). These
+results motivate explicit measurement assumptions, not rejection of every
+metric. Use existing metrics to locate a design question; verify the relevant
+state, boundary, or failure scenario. Never pursue low counts by compressing
+code, hiding coupling, or concentrating unrelated work in a large function.
 
-No computable metric can establish unrestricted semantic minimality. Rice's
-theorem rules out deciding every non-trivial semantic program property in
-general ([Rice](https://doi.org/10.2307/1990888)). Proposed complexity measures
-also encode different assumptions: Weyuker's evaluation shows why no common
-measure satisfies every desirable property
-([Weyuker](https://doi.org/10.1109/32.6178)), while property-based measurement
-requires theoretical justification beyond correlation
-([Briand, Morasca, and Basili](https://doi.org/10.1109/32.481535)). Therefore:
+## Structural invariants and their limits
 
-- never make LOC, token entropy, cyclomatic complexity, coupling, or churn a
-  universal beauty threshold;
-- use a signal to locate a concrete design question, then inspect the named
-  invariant, boundary, or change scenario;
-- let a project-specific hard check enforce only what it can observe reliably;
-  and
-- require an explicit decision for positive structural transitions rather than
-  claiming the checker understands semantic necessity.
+For explicit requirements and scope `R`, define concrete properties `I_R` of
+the design: legal states and transitions, authoritative data sources, or
+allowed dependency directions. The proof framework is:
 
-Long-lived systems often require deliberate work to preserve or reduce their
-complexity as they evolve
-([Lehman and Ramil](https://doi.org/10.1016/S0020-0190(03)00382-X)), but studies
-and measures differ across systems. For repositories that opt into executable
-transition checks, read
-[complexity-control.md](complexity-control.md).
+```text
+I_R holds initially
+and every accepted transformation preserves I_R
+=> I_R holds after every accepted transformation
+```
+
+This follows the invariant discipline of
+[Dijkstra, 1975](https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD472.html)
+and [Lamport, 1977](https://www.microsoft.com/en-us/research/?p=338279).
+The implication requires a precise model, a valid initial state, and proof of
+preservation. Tests and natural-language review usually provide evidence rather
+than that proof. A written explanation cannot define its own claim as true.
+
+- Establish the relevant initial properties. If existing code violates them,
+  resolve the affected scope; do not assume the whole repository is sound.
+- Check changes at the operations and boundaries that can violate the property.
+  Explicit representations and controlled mutation can exclude particular
+  failure classes within their stated assumptions.
+- Revisit assumptions when requirements or the environment change. Do not
+  redefine a property merely to conceal a violation.
+- Separate exploratory intermediate states from retained implementations.
+  Preserve safety and data integrity throughout; resolve unfinished structural
+  work before declaring completion.
+
+[Rice, 1953](https://www.ams.org/journals/tran/1953-074-02/S0002-9947-1953-0053041-6/S0002-9947-1953-0053041-6.pdf)
+limits general decision procedures for nontrivial semantic program properties.
+It does not rule out useful syntactic checks or proofs in restricted models.
+Neither that theorem nor an invariant argument turns "never over-designed"
+into a proven property of an arbitrary codebase. State exactly which property
+was established, for which scope, and by what evidence.
 
 ## Quality scenarios
 
@@ -195,7 +221,7 @@ and [ATAM](https://www.sei.cmu.edu/library/atam-method-for-architecture-evaluati
 Start with the information model, not classes or endpoints:
 
 1. Name the domain values, identities, units, and authoritative owner for each
-   fact; identify caches and derived views rather than creating competing truth.
+   fact; give caches and derived views explicit update or invalidation rules.
 2. State ownership, lifecycle, legal states, and legal transitions.
 3. State the invariant that every construction and mutation must preserve.
 4. Name the required lookup, update, ordering, uniqueness, and scale properties;
@@ -203,8 +229,9 @@ Start with the information model, not classes or endpoints:
 5. Distinguish absence, unknown, invalid, failed, and not-yet-loaded when those
    meanings change behavior.
 6. Prefer a simple representation where invalid combinations cannot be
-   constructed; use distinct types or tagged alternatives only when they
-   remove a real ambiguity.
+   constructed. Three mutually exclusive states, for example, need one state
+   value rather than three independent booleans with eight possible
+   combinations. Use distinct types or tagged alternatives for real ambiguity.
 7. Keep representation private. Do not leak mutable internal state or make
    callers reproduce validation rules.
 8. Validate untrusted data once at the trust boundary, then convert it to a
@@ -239,6 +266,14 @@ deployment, versioning, security, observability, capacity, recovery, and
 on-call ownership. Prefer an in-process module when those costs buy no real
 autonomy, scale, or containment.
 
+Lampson's [interface guidance](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/acrobat-17.pdf)
+balances minimum essentials with completeness, performance, and change.
+Share code when it expresses the same knowledge and should change for the same
+reason. Similar syntax alone does not justify a common abstraction across
+independent responsibilities. Ousterhout's
+[deep-module guidance](https://web.stanford.edu/~ouster/cgi-bin/aposd.php)
+likewise favors interfaces that hide substantial implementation complexity.
+
 Parnas grounds the information-hiding rule in
 [decomposition criteria](https://doi.org/10.1145/361598.361623) and
 [extension and contraction](https://doi.org/10.1109/TSE.1979.234169);
@@ -266,6 +301,23 @@ idempotency, timeout, cancellation, and partial progress as applicable.
 - Keep failure paths observable and test them; rarely used recovery logic is
   still production logic.
 
+Before adding validation, hashing, retry, or fallback, name the boundary,
+failure, or security requirement it protects. Keep necessary input and
+authorization checks. Avoid repeatedly checking established internal facts or
+silently recovering from an invalid model. A later change of trust, mutation,
+or permissions may require checking again; explain that concrete reason.
+
+For ordinary local state, prefer direct comparison or existing project
+capabilities. Use SHA-256 or other cryptographic mechanisms only for an actual
+integrity, security, or content-addressing requirement. Complexity review and
+remembering failed attempts do not need cryptographic identities.
+
+This applies [Saltzer and Schroeder's economy of mechanism](https://web.mit.edu/Saltzer/www/publications/protection/Basic.html)
+alongside their other protection principles. The
+[end-to-end argument](https://web.mit.edu/saltzer/www/publications/endtoend/endtoendA4.pdf)
+also asks which layer has enough knowledge to provide the intended guarantee;
+it does not prohibit lower-layer checks that serve a demonstrated purpose.
+
 Robustness does not mean accepting every input or implementing every failure
 mechanism. Remote calls cannot hide latency, concurrency, and partial failure
 behind local-call semantics
@@ -280,12 +332,56 @@ handling, a reminder to exercise the smallest credible failure schedules
 before adding elaborate recovery machinery
 ([Yuan et al.](https://www.usenix.org/conference/osdi14/technical-sessions/presentation/yuan)).
 
+## Development and retirement
+
+Apply these decisions within the five steps, using the current code and the
+project's existing tests, analysis, and review tools:
+
+1. Before adding a mechanism, evaluate the direct solution and the force that
+   makes it insufficient.
+2. After a meaningful implementation step, inspect what was added, moved, or
+   retired against the original outcome. Include affected callers, state,
+   configuration, and dependencies; a small diff can leave a large design debt.
+3. Follow related modules until the behavior and ownership are coherent. Fix
+   the cause at its responsible boundary before adding another local patch.
+   Stop expanding once this problem is resolved; unrelated cleanup and explicit
+   user scope limits still matter.
+4. When replacing code, update consumers and remove superseded branches,
+   duplicate truth, obsolete flags, and exploratory artifacts. For necessary
+   coexistence, identify actual consumers, the owner, and the retirement
+   condition through the project's existing practice. Do not erase required
+   compatibility to satisfy a cleanup target.
+5. Run relevant behavior and regression checks, then inspect the retained
+   structure. A failed check or unresolved design question returns to
+   [closed-loop resolution](closed-loop-engineering.md); success requires both
+   verified behavior and completed structural work.
+
+Lehman and Ramil's account of E-type software evolution describes increasing
+complexity unless deliberate work maintains or reduces it
+([2003](https://doi.org/10.1016/S0020-0190(03)00382-X)). This is empirical
+evolution research, not a thermodynamic theorem. It supports making
+simplification part of development rather than postponing it indefinitely.
+Wirth's [A Plea for Lean Software](https://doi.org/10.1109/2.348001) similarly
+distinguishes essential capability from accumulated software bulk.
+
+[SlopCodeBench, 2026, section 4.3](https://arxiv.org/html/2603.24755v1#S4.SS3)
+reports that quality-focused prompts improved starting quality without
+significantly changing degradation slopes in its prompt-intervention study.
+Treat this recent preprint as bounded evidence about those evaluated models,
+tasks, and measures. These skill rules are an engineering proposal to evaluate
+through repeated use, not a demonstrated cure for long-term agent degradation.
+
 ## Architecture evidence
 
 Create only the view needed for a named audience, concern, or decision. At the
 smallest useful scale, show key elements, relationships, external interfaces,
 dependency direction, state ownership, and important data or control flow.
 Multiple views must use consistent concepts.
+
+Check the view against actual callers, state ownership, and dependencies.
+[Software Reflexion Models](https://www.cs.ubc.ca/~murphy/papers/rm/fse95.html)
+compares an intended high-level model with an implementation mapping: a box
+diagram or directory inventory alone cannot establish conformance.
 
 For a likely change or failure, list the modules, interfaces, persisted state,
 and operations affected. Compare this counterfactual with static dependencies,
@@ -294,6 +390,8 @@ universal thresholds. Useful system-level proxies include explanation and
 onboarding time, deployed configuration diversity, dependency cycles, fanout,
 retry amplification, blast radius, and restore or rollback effort
 ([Google SRE](https://sre.google/workbook/simplicity/)).
+Yin et al.'s [study of 546 configuration errors](https://doi.org/10.1145/2043556.2043572)
+also motivates examining configuration's operational cost, not just its size.
 
 Compare a scale or performance mechanism with a competent simple baseline and
 absolute resource use, not only its scaling curve. The COST study found that
@@ -303,15 +401,18 @@ single-threaded implementation, or never did in the reported range
 
 Record an ADR only for a decision with lasting structural, quality, dependency,
 interface, data, or operational consequences. Capture context, decision,
-alternatives, consequences, confidence, and a review trigger. Architecture
-views serve stakeholder concerns under
+alternatives, consequences, confidence, and a review trigger; keep rationale
+coherent as implementation evolves
+([Parnas and Clements](https://doi.org/10.1109/TSE.1986.6312940)).
+Architecture views serve stakeholder concerns under
 [ISO/IEC/IEEE 42010](https://www.iso.org/standard/74393.html); the SEI
 [Views and Beyond](https://www.sei.cmu.edu/library/views-and-beyond-collection/)
 approach likewise selects only relevant views.
 
 ## Compact design record
 
-Scale this down for small changes and expand it only with evidence:
+For a lasting decision, use the project's existing record. These prompts may
+help; small changes need no fixed template or new file:
 
 ```text
 Outcome and quality scenarios:
@@ -323,45 +424,3 @@ Simplest useful end-to-end baseline:
 Chosen mechanisms, carrying cost, owner, and exit:
 Checks, rollback, and review trigger:
 ```
-
-## Evidence base
-
-The synthesis also draws on these primary and influential sources:
-
-- Brooks on conceptual integrity in
-  [The Mythical Man-Month](https://www.informit.com/content/images/9780201835953/samplepages/0201835959.pdf)
-  and essential versus accidental complexity in
-  [No Silver Bullet](https://www.cs.unc.edu/techreports/86-020.pdf).
-- Dijkstra on simplicity and clarity as engineering necessities in
-  [EWD648](https://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD648.html).
-- Jackson on preserving the distinction between problem-world obligations and
-  machine design in [The World and the Machine](https://doi.org/10.1145/225014.225041).
-- Lampson on interfaces that capture the minimum essentials while balancing
-  simplicity, completeness, performance, and change in
-  [Hints for Computer System Design](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/acrobat-17.pdf).
-- Parnas and Clements on keeping design rationale coherent despite an iterative
-  process in [A Rational Design Process](https://doi.org/10.1109/TSE.1986.6312940).
-- Wirth on separating essential capability from accumulated software bulk in
-  [A Plea for Lean Software](https://doi.org/10.1109/2.348001).
-- Alexander on fit between a problem's context and the form of its solution in
-  [Notes on the Synthesis of Form](https://christopher-alexander-ces-archive.org/book/notes-on-the-synthesis-of-form/).
-- Fowler's account of tested simple design and the price of speculative
-  flexibility in [Is Design Dead?](https://martinfowler.com/articles/designDead.html)
-  and [Beck's design rules](https://martinfowler.com/bliki/BeckDesignRules.html).
-- Ousterhout on deep modules, information leakage, and obvious code in
-  [A Philosophy of Software Design](https://web.stanford.edu/~ouster/cgi-bin/aposd.php).
-- Saltzer, Reed, and Clark on placing guarantees where the necessary knowledge
-  exists in [End-to-End Arguments in System Design](https://web.mit.edu/saltzer/www/publications/endtoend/endtoendA4.pdf).
-- Saltzer and Schroeder on economy of mechanism together with fail-safe
-  defaults, complete mediation, and least privilege in
-  [The Protection of Information in Computer Systems](https://doi.org/10.1109/PROC.1975.9939).
-- Yin et al.'s study of 546 real-world configuration errors, which grounds the
-  operational cost of unnecessary or weakly governed configuration, in
-  [SOSP 2011](https://doi.org/10.1145/2043556.2043572).
-
-These sources disagree on how much flexibility to build early and on the value
-of particular patterns. The practical resolution is risk-scaled evidence:
-design a seam for an observed source of change, but do not implement speculative
-variants; analyze irreversible public, persisted, security, and topology
-decisions earlier, while resolving local reversible choices through small
-experiments.
