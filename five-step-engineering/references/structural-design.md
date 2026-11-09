@@ -266,6 +266,13 @@ deployment, versioning, security, observability, capacity, recovery, and
 on-call ownership. Prefer an in-process module when those costs buy no real
 autonomy, scale, or containment.
 
+A solving decomposition is not a prescription for code modules: one child
+problem may span several existing modules. Define code boundaries by the
+responsibility and design decision they hide, not by the shape of a task tree.
+Joint reasoning about coupled parts does not require merging their code. Use
+the [decomposition and composition rules](closed-loop-engineering.md#problem-decomposition-and-composition)
+to check child assumptions and parent obligations.
+
 Clear ownership and narrow contracts also shorten feedback: exercise a
 responsibility directly, then verify its real callers and integration boundary.
 Add a test interface or double only for a named scenario that existing

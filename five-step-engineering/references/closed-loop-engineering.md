@@ -1,20 +1,22 @@
 # Closed-Loop Gate Resolution
 
-Use this reference when a gate remains unresolved or feedback is slow or
-inconclusive. Close the engineering loop with evidence that changes a decision,
-while preserving its acceptance criteria and structural obligations.
+Use this reference before decomposing a complex problem, when a gate remains
+unresolved, or when feedback is slow or inconclusive. Preserve the parent
+requirements while reducing solving effort and returning evidence to verify
+the combined result.
 
 ## Contents
 
 1. [The control criterion](#the-control-criterion)
-2. [Effective feedback](#effective-feedback)
-3. [Minimal loop state](#minimal-loop-state)
-4. [Recursive recovery](#recursive-recovery)
-5. [Development failures](#development-failures)
-6. [Progress and stability](#progress-and-stability)
-7. [Reframing and learning](#reframing-and-learning)
-8. [Resolution and escalation](#resolution-and-escalation)
-9. [Evidence base](#evidence-base)
+2. [Problem decomposition and composition](#problem-decomposition-and-composition)
+3. [Effective feedback](#effective-feedback)
+4. [Minimal loop state](#minimal-loop-state)
+5. [Recursive recovery](#recursive-recovery)
+6. [Development failures](#development-failures)
+7. [Progress and stability](#progress-and-stability)
+8. [Reframing and learning](#reframing-and-learning)
+9. [Resolution and escalation](#resolution-and-escalation)
+10. [Evidence base](#evidence-base)
 
 ## The control criterion
 
@@ -32,6 +34,52 @@ change the design. A probe needs a question, a predicted distinguishing result,
 and an observation sufficient for its scope. A clear small change can proceed
 directly to implementation and relevant checks. Scale the five steps to
 meaningful decisions rather than repeating them for every edit.
+
+## Problem decomposition and composition
+
+Use these distinctions when choosing a solving structure:
+
+- **Decomposition** separates a problem into parts, which may have different types.
+- **Divide and conquer** solves smaller instances of the same problem and
+  combines their solutions. Applying the same workflow to different tasks does
+  not by itself make the decomposition classic divide and conquer
+  ([Erickson, chapter 1](https://jeffe.cs.illinois.edu/teaching/algorithms/book/01-recursion.pdf)).
+- **Recursion** is direct or indirect self-invocation of a procedure.
+- **Iteration** repeats a process while updating its state; the feedback loop
+  at one problem level is distinct from descending into a child problem.
+
+Simplify first and solve directly when practical. Decompose only when the
+expected reduction in solving effort outweighs splitting, coordination,
+verification, and integration costs. No balanced split, fixed branching factor,
+or parallel execution is required.
+
+Before splitting, preserve the parent outcome, hard constraints, and acceptance
+criteria. Explain each child's assumptions, required guarantees, and significant
+state effects; state how its result supports the parent and what remains to
+be verified jointly. Use the existing context, without a mandatory form or tree.
+
+Check dependencies, shared state, ordering, and cross-boundary invariants before
+treating children as independent. For cyclic dependencies, establish a valid
+solving order, repair ownership, or reason about the coupled parts together.
+Mutual assumptions are not evidence that either guarantee holds. The
+[Abadi–Lamport composition work and author's commentary](https://www.microsoft.com/en-us/research/publication/composing-specifications/)
+explain why environment assumptions and composition arguments need care, and
+point to a revised treatment. Do not turn these engineering rules into an
+unconditional composition theorem.
+
+On return, verify that the child guarantees satisfy the actual callers'
+assumptions and preserve shared invariants. Exercise the combined behavior,
+failure paths, and resource or performance requirements relevant to the parent.
+Use appropriate integration, regression, equivalence, or workload checks;
+individual passes alone do not establish parent success. Remove superseded
+paths and investigative artifacts while preserving necessary compatibility.
+Tests and review provide evidence; a mathematical guarantee requires a precise
+model and proof.
+
+If a child falsifies a parent assumption, revisit that requirement and prune
+now-irrelevant branches. When children expose a common root cause, repair it at
+its responsible boundary. Recheck conclusions affected by changed assumptions
+or dependencies; reuse other results only when their conditions still hold.
 
 ## Effective feedback
 
@@ -70,9 +118,10 @@ and build new automation only when its necessity and lifecycle cost earn it.
 ## Minimal loop state
 
 Keep enough context to return to the parent: its outcome, gate criterion,
-discrepancy, assumptions, protected invariants, and the child's return
-condition. Compare the predicted result of an action with the observed result
-and state what changed. Scale effort to risk and information value.
+discrepancy, and protected invariants, together with the child's assumptions,
+required guarantees, significant effects, and return condition. Compare the
+predicted result with the observation and state what changed. Scale effort to
+risk and information value.
 
 Use the conversation or the project's existing decision record. A small task
 may need one sentence. Update the reasoning when an assumption or criterion
@@ -84,24 +133,24 @@ changes; do not create a tracking system for it.
    while gathering evidence for the unresolved gate.
 2. **Diagnose.** Distinguish a product defect from a faulty requirement,
    assumption, observation, test oracle, or environment.
-3. **Shrink.** Select one discrepancy whose resolution can change the parent
-   decision. Define a child with one deliverable and a strictly narrower
-   decision boundary.
-4. **Recurse.** Run Five-Step Engineering from step 1 on that child. Delete or
-   revise its own invalid requirements before optimizing a remedy.
+3. **Choose the scale.** Resolve directly when practical. Otherwise define the
+   necessary smaller child problems and their contracts; name the concrete
+   reduction in solving burden before descending.
+4. **Recurse.** Apply Five-Step Engineering from step 1 at each necessary level.
+   Question the child's requirements and simplify before further decomposition.
 5. **Probe.** Predict what would distinguish the live explanations, then run
    the smallest representative, safe, and reversible experiment, inspection,
    or implementation.
 6. **Observe.** Capture the actual result. A new explanation without a new
    signal is not evidence.
-7. **Return.** Bring back only evidence, a decision, or a necessary artifact;
-   discard temporary investigative complexity.
-8. **Re-evaluate.** Run the owning parent gate again. Child success never
-   implies parent success without recomposition and verification.
+7. **Return.** Bring back the required result, its assumptions, guarantees, and
+   evidence limits; discard temporary investigative complexity.
+8. **Recompose and verify.** Apply the composition checks above and rerun the
+   owning parent gate. Resume dependent work only when that gate is resolved.
 
-Prefer one active child that changes the parent decision over a tree of
-interesting investigations. Keep an alternative available for consequential
-choices; the locally closest action may have worse total cost or risk.
+Prefer one valuable active child by default to limit expansion cost; this does
+not restrict the number of necessary subproblems. Keep a live alternative for
+consequential choices and judge the total solving and integration cost.
 
 ## Development failures
 
@@ -131,9 +180,19 @@ Maintain both:
 
 - **Invariant:** scope, authorization, safety, privacy, data integrity,
   compatibility, and other hard constraints remain true.
-- **Progress measure:** a relevant uncertainty, unmet condition, risk,
-  candidate explanation, or unnecessary mechanism strictly decreases; or
-  new evidence falsifies and replaces a governing assumption.
+- **Progress signal:** reduce a relevant uncertainty, unmet condition, risk,
+  candidate explanation, or unnecessary mechanism; or replace a governing
+  assumption falsified by new evidence.
+
+A directly solvable case is the base case: solve, verify, and return. For a
+termination proof, local work and base cases must terminate, each invocation
+must make finitely many child calls, and descent must be strict in a well-founded
+relation ([Cornell](https://www.cs.cornell.edu/courses/cs3110/2014sp/lectures/16/gcd-proof.html)).
+A narrower description alone is not such a proof. New discoveries may invalidate
+an engineering progress measure; separate recursive descent from same-level
+feedback and re-evaluate the model. A budget bounds expenditure, not successful
+resolution. An unavailable external dependency remains unresolved, not a
+successful base case.
 
 Do not use token count, prose volume, or iteration count as progress. A failed
 experiment that rules out a consequential explanation is useful evidence.

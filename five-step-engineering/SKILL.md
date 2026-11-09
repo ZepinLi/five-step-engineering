@@ -54,6 +54,19 @@ without restarting the full protocol for every edit.
 - Preserve essential domain complexity and model it plainly; delete accidental complexity instead of hiding real constraints.
 - If consequential behavior is unknown and cannot be tested reversibly, investigate or ask; do not delete.
 
+## Problem Decomposition and Composition
+
+**Simplify before you divide. Define how to combine before splitting. Verify after you combine.**
+
+Solve directly when practical. Before decomposing a complex problem, read
+[decomposition and composition](references/closed-loop-engineering.md#problem-decomposition-and-composition).
+Split only when reduced solving effort outweighs decomposition, coordination,
+and integration costs. Preserve the parent requirements; define child
+assumptions, guarantees, significant effects, and how results meet the parent
+criteria. Apply the five steps at each
+necessary level, returning evidence to verify the whole. A problem tree does
+not prescribe new code modules or parallel execution.
+
 ## Apply the five gates
 
 ### 1. Question every requirement
@@ -79,7 +92,7 @@ without restarting the full protocol for every edit.
 - Delete speculative layers, wrappers, patterns, services, and extension points; first check whether the language, platform, or existing component already provides the capability.
 - Ask: "If this did not exist, what concrete failure would occur?" Answer with a check, not intuition.
 - Count net system cost. Treat a deletion that exports work or failure modes elsewhere as a possible regression.
-- Split implementation into small, verifiable behaviors spanning the necessary
+- Keep implementation increments small and verifiable, spanning the necessary
   callers and modules. Integrate at the relevant boundary early. For risky
   changes, use a bounded experiment with rollback; preserve unrelated user work
   and existing authorization boundaries.
@@ -167,9 +180,9 @@ When a gate does not resolve on the first pass, read [references/closed-loop-eng
 
 1. Name the discrepancy: the gate criterion, observed evidence, remaining uncertainty, and consequence of being wrong.
 2. Check the evaluator before changing the product. Locate the failure in the requirement, representation, ownership, boundary, test, environment, or implementation before adding another patch.
-3. Make the highest-value unresolved discrepancy a strictly narrower child problem. Apply all five steps to it from step 1.
+3. Resolve a directly solvable discrepancy without subdivision; otherwise define a narrower child problem with assumptions, a required result, and a concrete reduction in solving burden. Apply the five steps from step 1 at that scale.
 4. State a prediction and take the smallest safe, reversible action that can distinguish alternatives. Observe the result and update the evidence.
-5. Return only the new evidence, decision, or necessary artifact to the parent. Re-evaluate the same parent gate and resume from it when resolved.
+5. Return the result with its assumptions and evidence limits. Recombine under the parent contracts, check affected state and overall behavior, and retire superseded paths. Re-evaluate the same parent gate before resuming dependent work.
 6. If it remains unresolved, choose a different evidence-producing action, shrink the problem again, or question the governing requirement, measure, test oracle, or boundary. Never repeat an unchanged attempt without new evidence.
 
 Each cycle must preserve hard constraints and produce semantic progress: reduce a relevant uncertainty, eliminate an alternative, satisfy a missing condition, simplify the mechanism, or revise a falsified assumption. Wait for an action's result before correcting again; avoid concurrent loops that change the same state.

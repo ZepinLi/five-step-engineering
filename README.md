@@ -23,7 +23,7 @@ flowchart TB
     P --> G{"Behavior +<br/>structural review"}
     G -->|"pass"| O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    G -. "not resolved" .-> L["Probe · observe · decide<br/>resolve cause · retire old paths"]
+    G -. "not resolved" .-> L["Recurse · combine<br/>verify parent"]
     L -. "new evidence" .-> P
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
@@ -39,7 +39,37 @@ Gates control accepting, scaling, and building on a candidate. Tests and
 reversible probes can inform any step; return their evidence to the owning gate.
 Gather feedback throughout development, checking affected callers, state, and
 dependencies. Step 4 shortens the complete path from a question to the next
-evidence-based decision.
+evidence-based decision. Simplify before decomposing; define child contracts
+and how to combine their results. Apply the same five steps at each necessary
+level, then verify the whole against its original requirements.
+
+### Divide, recurse, recombine
+
+Divide to reduce reasoning scope. Reuse the five steps at each necessary level.
+Recombine to verify the whole; solve directly when splitting adds no value.
+
+```mermaid
+flowchart TB
+    P["Parent problem<br/>Five-Step Engineering"]
+    D["Simplify first<br/>split only when useful"]
+    A["Subproblem A<br/>same five steps"]
+    B["Subproblem B<br/>same five steps"]
+    V["Recombine · verify<br/>parent contracts + invariants"]
+
+    P --> D
+    D --> A
+    D --> B
+    A --> V
+    B --> V
+    D -->|"solve directly"| V
+
+    classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
+    classDef gate fill:#0d1117,stroke:#58a6ff,color:#f0f6fc;
+    classDef result fill:#dafbe1,stroke:#1a7f37,color:#116329;
+    class P input;
+    class D,A,B gate;
+    class V result;
+```
 
 ## Origins
 
