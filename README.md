@@ -23,7 +23,7 @@ flowchart TB
     P --> G{"Behavior +<br/>structural review"}
     G -->|"pass"| O["Minimum sufficient system"]
     O --> R["Target · Evidence · Decision · Next"]
-    G -. "not resolved" .-> L["Resolve cause · retire old paths<br/>nested five-step loop"]
+    G -. "not resolved" .-> L["Probe · observe · decide<br/>resolve cause · retire old paths"]
     L -. "new evidence" .-> P
 
     classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
@@ -35,11 +35,11 @@ flowchart TB
     style P fill:transparent,stroke:#8c959f,color:#8c959f;
 ```
 
-Advance only when the current evidence gate is resolved. A failed gate holds
-stage progression—not problem solving—while the smallest blocker is resolved
-recursively and returned to its parent gate.
-Review structure throughout development, including affected callers, state,
-and dependencies.
+Gates control accepting, scaling, and building on a candidate. Tests and
+reversible probes can inform any step; return their evidence to the owning gate.
+Gather feedback throughout development, checking affected callers, state, and
+dependencies. Step 4 shortens the complete path from a question to the next
+evidence-based decision.
 
 ## Origins
 
@@ -48,6 +48,8 @@ The process comes from Elon Musk's explanation during Tim Dodd's
 later popularized as
 [“The Algorithm”](https://www.inc.com/jeff-haden/elon-musks-algorithm-a-5-step-process-to-dramatically-improve-nearly-everything-is-both-simple-brilliant.html)
 in Walter Isaacson's *Elon Musk*.
+His [November 2026 interview](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06)
+reinforces improving both iteration frequency and progress per iteration.
 This skill adds explicit evidence gates, reversibility safeguards, and a
 [closed-loop recovery protocol](five-step-engineering/references/closed-loop-engineering.md)
 informed by risk-driven iteration, feedback control, recursive problem solving,

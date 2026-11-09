@@ -266,6 +266,13 @@ deployment, versioning, security, observability, capacity, recovery, and
 on-call ownership. Prefer an in-process module when those costs buy no real
 autonomy, scale, or containment.
 
+Clear ownership and narrow contracts also shorten feedback: exercise a
+responsibility directly, then verify its real callers and integration boundary.
+Add a test interface or double only for a named scenario that existing
+capabilities cannot adequately exercise. Check it against the real contract;
+avoid creating parallel domain behavior merely to make local tests pass.
+Remove handoff delays while preserving boundaries with a real responsibility.
+
 Lampson's [interface guidance](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/acrobat-17.pdf)
 balances minimum essentials with completeness, performance, and change.
 Share code when it expresses the same knowledge and should change for the same
@@ -339,9 +346,10 @@ project's existing tests, analysis, and review tools:
 
 1. Before adding a mechanism, evaluate the direct solution and the force that
    makes it insufficient.
-2. After a meaningful implementation step, inspect what was added, moved, or
-   retired against the original outcome. Include affected callers, state,
-   configuration, and dependencies; a small diff can leave a large design debt.
+2. Work in small, verifiable behaviors across the necessary modules, exercising
+   affected contracts early. After each meaningful step, inspect what was
+   added, moved, or retired across callers, state, configuration, and dependencies
+   against the original outcome.
 3. Follow related modules until the behavior and ownership are coherent. Fix
    the cause at its responsible boundary before adding another local patch.
    Stop expanding once this problem is resolved; unrelated cleanup and explicit
@@ -351,10 +359,12 @@ project's existing tests, analysis, and review tools:
    coexistence, identify actual consumers, the owner, and the retirement
    condition through the project's existing practice. Do not erase required
    compatibility to satisfy a cleanup target.
-5. Run relevant behavior and regression checks, then inspect the retained
-   structure. A failed check or unresolved design question returns to
-   [closed-loop resolution](closed-loop-engineering.md); success requires both
-   verified behavior and completed structural work.
+5. Use focused checks during development and necessary integration and full
+   checks before completion; inspect the retained structure even after a
+   prototype succeeds. Resolve unfinished behavior or structure through the
+   [feedback loop](closed-loop-engineering.md#effective-feedback). Success
+   requires verified behavior, retired exploratory artifacts, and completed
+   structural work.
 
 Lehman and Ramil's account of E-type software evolution describes increasing
 complexity unless deliberate work maintains or reduces it

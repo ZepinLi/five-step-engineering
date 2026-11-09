@@ -1,37 +1,71 @@
 # Closed-Loop Gate Resolution
 
-Use this reference when an evidence gate does not resolve on its first pass.
-The purpose is to close the parent engineering loop without weakening the gate,
-repeating blind attempts, or growing a permanent orchestration system.
+Use this reference when a gate remains unresolved or feedback is slow or
+inconclusive. Close the engineering loop with evidence that changes a decision,
+while preserving its acceptance criteria and structural obligations.
 
 ## Contents
 
 1. [The control criterion](#the-control-criterion)
-2. [Minimal loop state](#minimal-loop-state)
-3. [Recursive recovery](#recursive-recovery)
-4. [Development failures](#development-failures)
-5. [Progress and stability](#progress-and-stability)
-6. [Reframing and learning](#reframing-and-learning)
-7. [Resolution and escalation](#resolution-and-escalation)
-8. [Evidence base](#evidence-base)
+2. [Effective feedback](#effective-feedback)
+3. [Minimal loop state](#minimal-loop-state)
+4. [Recursive recovery](#recursive-recovery)
+5. [Development failures](#development-failures)
+6. [Progress and stability](#progress-and-stability)
+7. [Reframing and learning](#reframing-and-learning)
+8. [Resolution and escalation](#resolution-and-escalation)
+9. [Evidence base](#evidence-base)
 
 ## The control criterion
 
-A gate is a feedback control, not a stop sign. Its failure is an error signal:
-the observed state does not yet justify the next commitment. Hold promotion to
-later stages, diagnose the discrepancy, change the state or the model with an
-evidence-producing action, and measure again.
+A gate controls accepting a candidate, scaling it, and work that depends on
+its unverified assumptions. Preserve the five-step decision order while using
+tests, measurements, and reversible prototypes at any stage to resolve the
+owning decision. Re-evaluate that gate with the results before committing.
 
-A verdict alone is not a closed loop. A useful loop has:
+The working loop is:
 
-- a parent outcome and gate criterion;
-- an observation of the current state;
-- a discrepancy that can change the parent decision;
-- an authorized action capable of affecting or revealing that state; and
-- feedback that returns to the same parent gate.
+`Hypothesis -> Representative probe -> Observe -> Keep, revise, or delete -> Recheck owning gate`
 
-Do not claim control-theoretic convergence for an open-ended agent task. Use
-the discipline to make progress observable and bounded.
+Before broad implementation, test the consequential unknown most likely to
+change the design. A probe needs a question, a predicted distinguishing result,
+and an observation sufficient for its scope. A clear small change can proceed
+directly to implementation and relevant checks. Scale the five steps to
+meaningful decisions rather than repeating them for every edit.
+
+## Effective feedback
+
+Use this engineering interpretation:
+
+`Effective progress rate ≈ Verified progress per iteration / Complete feedback cycle time`
+
+Compare the same outcome and quality criteria; disproving an important
+assumption also produces learning. The expression is a reasoning aid, not a
+universal law or a scoring protocol. In the
+[November 6, 2026 interview](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06),
+Musk linked iteration frequency with progress per iteration and proposed
+reducing a research-fab cycle from roughly a year to a month. The latter was
+an aspiration, not an achieved result or a guaranteed software speedup.
+
+Observe elapsed time from the question through setup, implementation, checks,
+waiting, interpretation, and the next decision. Reduce the dominant observed
+delay with existing tools. Use available timings when useful; a small task
+needs no timing log, fixed quota, or monitoring system.
+
+Slice work into verifiable behavior and exercise the relevant integration
+boundary early. Accumulating file-by-file fragments before any integrated
+feedback defeats small batches
+([DORA](https://dora.dev/capabilities/working-in-small-batches/)).
+Use quick checks that discriminate the current hypothesis, integration checks
+for affected contracts, and necessary full checks before completion
+([DORA on fast and comprehensive feedback](https://dora.dev/capabilities/continuous-integration/)).
+Keep the final acceptance criteria and expose the limits of substitutes or
+simulations. After observing a result, keep, revise, or delete the candidate,
+retire superseded paths, and recheck the parent behavior and structure.
+
+Feedback operates throughout the five steps. Step 4 improves a feedback
+process already justified by steps 1–3; reuse existing automation immediately,
+and build new automation only when its necessity and lifecycle cost earn it.
 
 ## Minimal loop state
 
@@ -46,8 +80,8 @@ changes; do not create a tracking system for it.
 
 ## Recursive recovery
 
-1. **Hold.** Do not enter a later five-step stage while the owning gate is
-   unresolved.
+1. **Hold commitment.** Keep acceptance, scaling, and dependent work pending
+   while gathering evidence for the unresolved gate.
 2. **Diagnose.** Distinguish a product defect from a faulty requirement,
    assumption, observation, test oracle, or environment.
 3. **Shrink.** Select one discrepancy whose resolution can change the parent
@@ -56,7 +90,8 @@ changes; do not create a tracking system for it.
 4. **Recurse.** Run Five-Step Engineering from step 1 on that child. Delete or
    revise its own invalid requirements before optimizing a remedy.
 5. **Probe.** Predict what would distinguish the live explanations, then run
-   the smallest safe and reversible experiment, inspection, or implementation.
+   the smallest representative, safe, and reversible experiment, inspection,
+   or implementation.
 6. **Observe.** Capture the actual result. A new explanation without a new
    signal is not evidence.
 7. **Return.** Bring back only evidence, a decision, or a necessary artifact;
@@ -100,14 +135,16 @@ Maintain both:
   candidate explanation, or unnecessary mechanism strictly decreases; or
   new evidence falsifies and replaces a governing assumption.
 
-Do not use token count, prose volume, or another action taken as progress.
+Do not use token count, prose volume, or iteration count as progress. A failed
+experiment that rules out a consequential explanation is useful evidence.
 Describe repeated failures using the actual code, assumptions, evidence, and
 action. Do not repeat the same failed attempt unless its evidence or retry
 condition changes; no hashes or additional state registry are needed.
 
 Avoid unstable correction:
 
-- wait for the expected observation latency before acting again;
+- wait for an action's result at the expected observation latency before
+  correcting the same state again;
 - use tolerances for noisy measures instead of reacting to every fluctuation;
 - do not let multiple child loops modify the same state concurrently;
 - detect add/remove oscillation and repeated states;
@@ -116,6 +153,9 @@ Avoid unstable correction:
 
 When progress stalls, change the action, observation, representation, or frame.
 More of the same is not persistence.
+
+These practices make progress observable and bounded; they do not establish
+control-theoretic convergence for an open-ended agent task.
 
 ## Reframing and learning
 

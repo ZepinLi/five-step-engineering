@@ -24,7 +24,10 @@ Use this ordered decision protocol, scaled to the decision at hand:
 - Justify added structure with a current constraint and evidence; retire what
   it replaces; fix the representation, ownership, or boundary that caused a
   recurring problem. Written justification alone does not establish necessity.
-- Keep the order mandatory. A failed gate blocks promotion, not problem solving.
+- Preserve the five-step decision order. An unresolved gate holds acceptance,
+  scaling, and work that depends on the unverified decision. Tests, measurements,
+  and reversible prototypes can supply evidence at any stage; return their
+  results to the owning gate before committing to the candidate.
 - If a later step invalidates an assumption, open a nested five-step loop around that assumption, resolve it, then return to the gate that owns it.
 
 ## Scope and safeguards
@@ -37,7 +40,9 @@ Before starting:
 
 Before designing changes to code structure, data, interfaces, or architecture,
 read [references/structural-design.md](references/structural-design.md). Scale
-its reasoning to the task; a small edit needs no fixed form or new record file.
+its reasoning to the task; a clear small change needs no extra experiment,
+fixed form, or new record file. Apply the five steps to meaningful decisions,
+without restarting the full protocol for every edit.
 
 - Follow callers, state ownership, and dependencies into related modules to
   resolve the current problem completely. Stop expanding when the affected
@@ -56,6 +61,9 @@ its reasoning to the task; a small edit needs no fixed form or new record file.
 - Within the decision boundary, trace each requirement to an accountable owner or verifiable artifact: issue, PR, spec, test, benchmark, or compliance clause.
 - Ask what outcome it protects, what would fail without it, and whether it is stale, mis-scoped, or over-specified.
 - Translate qualities such as "robust," "elegant," "scalable," or "maintainable" into a concrete stimulus, environment, response, and measurable bound.
+- Before broad implementation, test the consequential assumption, data contract,
+  or failure scenario most likely to change the design. Use the smallest
+  representative probe and state what its result would change.
 - Do not treat a department, convention, authority, or "best practice" as evidence. Seniority does not reduce error.
 - If neither owner nor artifact exists, inspect first; ask the user when the answer would change a consequential decision. Do not treat absence of evidence as permission to delete.
 
@@ -71,9 +79,10 @@ its reasoning to the task; a small edit needs no fixed form or new record file.
 - Delete speculative layers, wrappers, patterns, services, and extension points; first check whether the language, platform, or existing component already provides the capability.
 - Ask: "If this did not exist, what concrete failure would occur?" Answer with a check, not intuition.
 - Count net system cost. Treat a deletion that exports work or failure modes elsewhere as a possible regression.
-- Keep implementation steps separable while covering the related modules needed
-  for correctness. For risky changes, use a bounded, observable experiment with
-  rollback; preserve unrelated user work and existing authorization boundaries.
+- Split implementation into small, verifiable behaviors spanning the necessary
+  callers and modules. Integrate at the relevant boundary early. For risky
+  changes, use a bounded experiment with rollback; preserve unrelated user work
+  and existing authorization boundaries.
 - Use "roughly 10% gets added back" only as a calibration prompt across repeated low-risk experiments, never as a quota or universal law.
 
 **Gate:** Delete on evidence of net benefit, retain on evidence of necessity, and investigate consequential uncertainty.
@@ -105,12 +114,23 @@ its reasoning to the task; a small edit needs no fixed form or new record file.
 
 ### 4. Accelerate the cycle
 
-- Shorten the path from change to trustworthy real-world feedback.
-- Cut batch size, handoffs, waiting, and validation latency.
-- Prefer a small behavior-preserving refactor or throwaway spike over a speculative framework; keep each structural decision reversible where practical.
-- Measure the full cycle; do not trade nominal speed for rework, hidden risk, or weaker signal.
+- Gather feedback throughout the five steps. Here, improve the feedback process
+  that survived questioning, deletion, and simplification.
+- Observe the full cycle: question, setup, change, check, waiting, interpretation,
+  and next decision. Reduce the dominant observed delay using existing project
+  capabilities; preserve useful module boundaries while shortening handoffs.
+- Use quick checks for the current hypothesis, integration checks at affected
+  boundaries, and necessary full checks before completion. A local pass does
+  not establish the complete behavior or structural integrity.
+- Compare useful decisions and cycle time for the same outcome and quality
+  criteria. Count a disproved consequential assumption as learning; do not use
+  iteration count, fixed time quotas, or skipped verification as success.
+- For slow or inconclusive feedback, read
+  [effective feedback](references/closed-loop-engineering.md#effective-feedback).
 
-**Gate:** Make learning measurably faster without reducing signal quality.
+**Gate:** Evidence supports earlier useful decisions without weaker verification,
+unfinished structural work, or increased rework. State timing uncertainty when
+claiming a speed improvement.
 
 ### 5. Automate
 
@@ -138,11 +158,12 @@ its reasoning to the task; a small edit needs no fixed form or new record file.
   Treat line counts and entropy as diagnostic signals; meaningful growth may
   be necessary, and neither deletion quotas nor compressed code establish quality.
 - Do not equate "not observed" with "cannot occur." State sampling limits.
-- If evidence is unavailable, mark the conclusion unverified and make the missing evidence the next child problem. It blocks stage promotion, not the task.
+- If evidence is unavailable, mark the conclusion unverified and make the
+  missing evidence the next child problem; hold acceptance of the affected decision.
 
 ## Resolve failed gates recursively
 
-When a gate does not resolve on the first pass, read [references/closed-loop-engineering.md](references/closed-loop-engineering.md). Hold later stages and keep working on the current gate:
+When a gate does not resolve on the first pass, read [references/closed-loop-engineering.md](references/closed-loop-engineering.md). Resolve it before accepting or building on the candidate:
 
 1. Name the discrepancy: the gate criterion, observed evidence, remaining uncertainty, and consequence of being wrong.
 2. Check the evaluator before changing the product. Locate the failure in the requirement, representation, ownership, boundary, test, environment, or implementation before adding another patch.
