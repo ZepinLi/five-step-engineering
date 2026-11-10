@@ -49,12 +49,18 @@ Divide to reduce reasoning scope. Reuse the five steps at each necessary level.
 Recombine to verify the whole; solve directly when splitting adds no value.
 
 ```mermaid
+---
+config:
+    htmlLabels: false
+    flowchart:
+        padding: 24
+---
 flowchart TB
     P["Parent problem<br/>Five-Step Engineering"]
-    D["Simplify first<br/>split only when useful"]
+    D["Simplify first<br/>split only if useful"]
     A["Subproblem A<br/>same five steps"]
     B["Subproblem B<br/>same five steps"]
-    V["Recombine · verify<br/>parent contracts + invariants"]
+    V["Recombine · verify<br/>contracts + invariants"]
 
     P --> D
     D --> A
@@ -63,12 +69,12 @@ flowchart TB
     B --> V
     D -->|"solve directly"| V
 
-    classDef input fill:#f6f8fa,stroke:#57606a,color:#24292f;
-    classDef gate fill:#0d1117,stroke:#58a6ff,color:#f0f6fc;
-    classDef result fill:#dafbe1,stroke:#1a7f37,color:#116329;
-    class P input;
-    class D,A,B gate;
-    class V result;
+    classDef parent fill:#f5f3ff,stroke:#8b7db0,color:#33264d;
+    classDef step fill:#231b35,stroke:#b8a1e3,color:#f2eaff;
+    classDef whole fill:#d1f5ec,stroke:#298a78,color:#145347;
+    class P parent;
+    class D,A,B step;
+    class V whole;
 ```
 
 ## Origins
